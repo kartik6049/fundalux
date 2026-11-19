@@ -54,13 +54,13 @@ explains how to check it.
 
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate     # already set up on this machine
+python3 -m venv .venv && source .venv/bin/activate    
 pip install -r requirements.txt
 
 uvicorn server.main:app --port 8000                    # open http://localhost:8000
 FUNDALUX_ADMIN_TOKEN=change-me uvicorn server.main:app --port 8000   # also allows site calibration
 
-pytest                                                 # 79 tests, about 6 minutes on this laptop
+pytest                                                 # 79 tests
 ```
 
 To host it, use the `Dockerfile`: it builds one container, CPU only, with no PyTorch.
