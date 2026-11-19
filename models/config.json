@@ -1,0 +1,89 @@
+{
+  "format": 2,
+  "image_size": 512,
+  "min_input_side": 224,
+  "grade_names": [
+    "No DR",
+    "Mild NPDR",
+    "Moderate NPDR",
+    "Severe NPDR",
+    "Proliferative DR"
+  ],
+  "referable_min_grade": 2,
+  "dr": {
+    "models": [
+      {
+        "arch": "efficientnet_b3",
+        "weights": "netraxai_dr_1_efficientnet_b3.pt",
+        "input_size": 512
+      },
+      {
+        "arch": "efficientnet_v2_s",
+        "weights": "netraxai_dr_2_efficientnet_v2_s.pt",
+        "input_size": 448
+      },
+      {
+        "arch": "convnext_tiny",
+        "weights": "netraxai_dr_3_convnext_tiny.pt",
+        "input_size": 448
+      }
+    ],
+    "combine": "mean of the members' probabilities",
+    "num_grades": 5,
+    "threshold": 0.17907479629102144
+  },
+  "quality": {
+    "arch": "efficientnet_b0",
+    "weights": "netraxai_quality.pt",
+    "input_size": 256,
+    "threshold": 0.40656742291307774,
+    "hint_ranges": {
+      "sharpness": [
+        28.192980194091795,
+        194.63416259765617
+      ],
+      "brightness": [
+        61.612559967041015,
+        157.01393493652344
+      ],
+      "contrast": [
+        11.520362319946289,
+        36.45643829345703
+      ],
+      "saturated_fraction": [
+        0.0,
+        0.01
+      ]
+    }
+  },
+  "trained_with": {
+    "torch": "2.11.0+cu130",
+    "run": "efficientnet_b3@512+efficientnet_v2_s@448+convnext_tiny@448_balanced",
+    "date": "2026-11-18",
+    "hours": 5.6038804700639515,
+    "smoke_test": false
+  },
+  "onnx": {
+    "dir": "onnx",
+    "opset": 17,
+    "members": [
+      {
+        "arch": "efficientnet_b3",
+        "file": "dr_1_efficientnet_b3.onnx",
+        "input_size": 512
+      },
+      {
+        "arch": "efficientnet_v2_s",
+        "file": "dr_2_efficientnet_v2_s.onnx",
+        "input_size": 448
+      },
+      {
+        "arch": "convnext_tiny",
+        "file": "dr_3_convnext_tiny.onnx",
+        "input_size": 448
+      }
+    ],
+    "heads": "heads.npz",
+    "quality": "quality.onnx"
+  }
+}

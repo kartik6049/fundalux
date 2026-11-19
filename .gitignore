@@ -1,0 +1,39 @@
+# Python and tooling
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+graphify-out/
+.claude/settings.local.json
+
+# Operating system and editors
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Local access codes
+.env
+.env.*
+
+# Trained weights come from the Kaggle notebook and are too large for git (the ConvNeXt file alone is
+# over GitHub's 100 MB limit); see models/README.md. The small files the web pages and the documentation
+# read (config, metrics, site thresholds, reports, figures) are tracked.
+models/*.pt
+models/*.onnx
+models/onnx/
+models_run*/
+
+# Kaggle downloads and executed copies of the notebook (named notebook<hex>.ipynb by Kaggle).
+# The source notebook, Fundalux_Kaggle_Training.ipynb, is tracked.
+*.zip
+notebook*.ipynb
+
+# Clinicians' answers belong to the study, not the code
+review/responses.sqlite3*
+review.old/
+review.new/

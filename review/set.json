@@ -1,0 +1,1269 @@
+{
+ "name": "IDRiD test photographs (expert grades)",
+ "created": "2026-11-19",
+ "site": "IDRiD (Nanded, India)",
+ "model_run": "efficientnet_b3@512+efficientnet_v2_s@448+convnext_tiny@448_balanced",
+ "model_fingerprint": "f7e56f2cd2e94fdb",
+ "items": [
+  {
+   "id": "r001",
+   "file": "images/r001.jpg",
+   "heatmap": "heat/r001.jpg",
+   "original": "IDRiD_046.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.1570267881686147e-06,
+    "referable_score": 0.20364866076898144,
+    "grade": 1,
+    "grade_probs": [
+     0.008199192560153605,
+     0.917288394868891,
+     0.06100167661265113,
+     0.00217936157874708,
+     0.011331374379557071
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r002",
+   "file": "images/r002.jpg",
+   "heatmap": "heat/r002.jpg",
+   "original": "IDRiD_062.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 6.296919353904801e-05,
+    "referable_score": 0.9952167209827573,
+    "grade": 4,
+    "grade_probs": [
+     0.0013854777484707268,
+     0.04148538096008532,
+     0.05413434144318452,
+     0.1652606400557616,
+     0.7377341597924979
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r003",
+   "file": "images/r003.jpg",
+   "heatmap": "heat/r003.jpg",
+   "original": "IDRiD_072.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 6.817119862940771e-06,
+    "referable_score": 0.9821708847836836,
+    "grade": 2,
+    "grade_probs": [
+     0.003251475307062024,
+     0.15171436950453063,
+     0.488638422094573,
+     0.21341379559502108,
+     0.14298193749881322
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r004",
+   "file": "images/r004.jpg",
+   "heatmap": "heat/r004.jpg",
+   "original": "IDRiD_043.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.786230099997974e-05,
+    "referable_score": 0.06742355927368353,
+    "grade": 1,
+    "grade_probs": [
+     0.15948616729993123,
+     0.7505205181037932,
+     0.047550983518662326,
+     0.014412767617939184,
+     0.028029563459673886
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r005",
+   "file": "images/r005.jpg",
+   "heatmap": "heat/r005.jpg",
+   "original": "IDRiD_059.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 3.147170905851815e-06,
+    "referable_score": 0.833762116229099,
+    "grade": 1,
+    "grade_probs": [
+     0.003718789319526574,
+     0.5085365088233661,
+     0.3770361221320771,
+     0.036329562540544556,
+     0.07437901718448563
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r006",
+   "file": "images/r006.jpg",
+   "heatmap": "heat/r006.jpg",
+   "original": "IDRiD_029.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.00023753515721697515,
+    "referable_score": 0.0882476548266662,
+    "grade": 1,
+    "grade_probs": [
+     0.20624044782211295,
+     0.6521053010797792,
+     0.05023620871822268,
+     0.03198695607832801,
+     0.05943108630155713
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r007",
+   "file": "images/r007.jpg",
+   "heatmap": "heat/r007.jpg",
+   "original": "IDRiD_092.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 8.113040670083481e-05,
+    "referable_score": 0.05738123194092889,
+    "grade": 1,
+    "grade_probs": [
+     0.049993415411559085,
+     0.898595436834767,
+     0.027701521961412692,
+     0.005088962828726278,
+     0.01862066296353493
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r008",
+   "file": "images/r008.jpg",
+   "heatmap": "heat/r008.jpg",
+   "original": "IDRiD_051.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.7608635740976228e-05,
+    "referable_score": 0.9625990739369529,
+    "grade": 2,
+    "grade_probs": [
+     0.002988226539675079,
+     0.23794131110172745,
+     0.4832852726519081,
+     0.15145531097570566,
+     0.1243298787309836
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r009",
+   "file": "images/r009.jpg",
+   "heatmap": "heat/r009.jpg",
+   "original": "IDRiD_086.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.4342235762693183e-06,
+    "referable_score": 0.028995215286810604,
+    "grade": 1,
+    "grade_probs": [
+     0.007912084074854012,
+     0.9773691930447072,
+     0.007869616531636066,
+     0.0008707652926027106,
+     0.0059783410562002535
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r010",
+   "file": "images/r010.jpg",
+   "heatmap": "heat/r010.jpg",
+   "original": "IDRiD_099.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 3.219543534780454e-05,
+    "referable_score": 0.0814719436336216,
+    "grade": 1,
+    "grade_probs": [
+     0.1145681195396449,
+     0.7564405422948178,
+     0.03865128428686517,
+     0.04173461368871891,
+     0.04860544018995322
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r011",
+   "file": "images/r011.jpg",
+   "heatmap": "heat/r011.jpg",
+   "original": "IDRiD_057.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.026857332891857755,
+    "referable_score": 0.9943223215290908,
+    "grade": 3,
+    "grade_probs": [
+     0.0015386130059569885,
+     0.0068283281738987485,
+     0.018129411784607714,
+     0.650077890977896,
+     0.32342575605764073
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r012",
+   "file": "images/r012.jpg",
+   "heatmap": "heat/r012.jpg",
+   "original": "IDRiD_103.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 2.0411298691282176e-06,
+    "referable_score": 0.012427447679078102,
+    "grade": 1,
+    "grade_probs": [
+     0.13956506009549025,
+     0.8266116224134809,
+     0.010355348006916352,
+     0.005669899184525679,
+     0.0177980702995868
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r013",
+   "file": "images/r013.jpg",
+   "heatmap": "heat/r013.jpg",
+   "original": "IDRiD_022.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 4.8825272732991486e-05,
+    "referable_score": 0.9983840676076648,
+    "grade": 3,
+    "grade_probs": [
+     0.0007771832782144137,
+     0.0276158142610609,
+     0.3671187869806581,
+     0.4998642220034098,
+     0.10462399347665674
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r014",
+   "file": "images/r014.jpg",
+   "heatmap": "heat/r014.jpg",
+   "original": "IDRiD_040.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.00012039600015597266,
+    "referable_score": 0.9555469069410546,
+    "grade": 4,
+    "grade_probs": [
+     0.004051035072892576,
+     0.18231634073725445,
+     0.24729136459234302,
+     0.0368131534993376,
+     0.5295281060981724
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r015",
+   "file": "images/r015.jpg",
+   "heatmap": "heat/r015.jpg",
+   "original": "IDRiD_085.jpg",
+   "reference_grade": 1,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 4.087492972016127e-06,
+    "referable_score": 0.06078763098534983,
+    "grade": 1,
+    "grade_probs": [
+     0.07661900659225286,
+     0.864074461420171,
+     0.03283744171058963,
+     0.00760468086318087,
+     0.018864409413805648
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r016",
+   "file": "images/r016.jpg",
+   "heatmap": "heat/r016.jpg",
+   "original": "IDRiD_001.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.586368477711147e-05,
+    "referable_score": 0.9918026818638852,
+    "grade": 4,
+    "grade_probs": [
+     0.002341449172340629,
+     0.011197796523908718,
+     0.011553572878465762,
+     0.4074317808628729,
+     0.567475400562412
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r017",
+   "file": "images/r017.jpg",
+   "heatmap": "heat/r017.jpg",
+   "original": "IDRiD_078.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 7.9806899716217e-06,
+    "referable_score": 0.00965771935216445,
+    "grade": 1,
+    "grade_probs": [
+     0.3344630075168915,
+     0.5825558734151703,
+     0.011148826836188478,
+     0.02719466394409797,
+     0.04463762828765163
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r018",
+   "file": "images/r018.jpg",
+   "heatmap": "heat/r018.jpg",
+   "original": "IDRiD_002.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 6.279773313635672e-06,
+    "referable_score": 0.8863691119186461,
+    "grade": 1,
+    "grade_probs": [
+     0.0034531250539411758,
+     0.5334035889815293,
+     0.24163554519120442,
+     0.03736044770272162,
+     0.1841472930706035
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r019",
+   "file": "images/r019.jpg",
+   "heatmap": "heat/r019.jpg",
+   "original": "IDRiD_004.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.0010051031586744668,
+    "referable_score": 0.9696272058501519,
+    "grade": 4,
+    "grade_probs": [
+     0.01631214024828129,
+     0.05483738505089595,
+     0.09659616774913155,
+     0.286891964445881,
+     0.5453623425058102
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r020",
+   "file": "images/r020.jpg",
+   "heatmap": "heat/r020.jpg",
+   "original": "IDRiD_007.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 4.8918933260232e-06,
+    "referable_score": 0.9743754116933405,
+    "grade": 4,
+    "grade_probs": [
+     0.0037701571034725358,
+     0.14630086019107802,
+     0.29571444236218275,
+     0.21989520159916465,
+     0.3343193387441021
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r021",
+   "file": "images/r021.jpg",
+   "heatmap": "heat/r021.jpg",
+   "original": "IDRiD_054.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.00012118452412901972,
+    "referable_score": 0.02616644749567022,
+    "grade": 1,
+    "grade_probs": [
+     0.26016738259070543,
+     0.6670818741649617,
+     0.029334500594659033,
+     0.01106794392162235,
+     0.032348298728051506
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r022",
+   "file": "images/r022.jpg",
+   "heatmap": "heat/r022.jpg",
+   "original": "IDRiD_039.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.928851962906358e-06,
+    "referable_score": 0.014010186586458771,
+    "grade": 1,
+    "grade_probs": [
+     0.376871876672144,
+     0.5173189522504043,
+     0.015291231862794413,
+     0.038980206437960255,
+     0.05153773277669701
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r023",
+   "file": "images/r023.jpg",
+   "heatmap": "heat/r023.jpg",
+   "original": "IDRiD_087.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 9.336919427280192e-06,
+    "referable_score": 0.986627060679481,
+    "grade": 2,
+    "grade_probs": [
+     0.002555685921098677,
+     0.18919897601275862,
+     0.3367490650058149,
+     0.13572687367224712,
+     0.33576939938808065
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r024",
+   "file": "images/r024.jpg",
+   "heatmap": "heat/r024.jpg",
+   "original": "IDRiD_053.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.001781069283704326,
+    "referable_score": 0.9986586019013024,
+    "grade": 4,
+    "grade_probs": [
+     0.0006479153706038298,
+     0.012004662444437814,
+     0.029197953857303654,
+     0.09201868501961218,
+     0.8661307833080425
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r025",
+   "file": "images/r025.jpg",
+   "heatmap": "heat/r025.jpg",
+   "original": "IDRiD_014.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 3.508312321252007e-05,
+    "referable_score": 0.9934210927898833,
+    "grade": 2,
+    "grade_probs": [
+     0.0018223697480906312,
+     0.09797734649070707,
+     0.5765783664044335,
+     0.21696940388037186,
+     0.10665251347639702
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r026",
+   "file": "images/r026.jpg",
+   "heatmap": "heat/r026.jpg",
+   "original": "IDRiD_026.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 3.8844480286718636e-05,
+    "referable_score": 0.9986775598852692,
+    "grade": 3,
+    "grade_probs": [
+     0.0008996242244134039,
+     0.010037495319948837,
+     0.05026101079962191,
+     0.6787826851810758,
+     0.26001918447494016
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r027",
+   "file": "images/r027.jpg",
+   "heatmap": "heat/r027.jpg",
+   "original": "IDRiD_056.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.1218609505233478e-05,
+    "referable_score": 0.02133990567244272,
+    "grade": 1,
+    "grade_probs": [
+     0.26190045816760693,
+     0.6565989853667658,
+     0.02309790188144405,
+     0.018676834097683236,
+     0.03972582048650009
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r028",
+   "file": "images/r028.jpg",
+   "heatmap": "heat/r028.jpg",
+   "original": "IDRiD_006.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 4.0430763846912815e-07,
+    "referable_score": 0.9215194753302584,
+    "grade": 2,
+    "grade_probs": [
+     0.0046445054658852255,
+     0.32265527271410605,
+     0.4200926617007044,
+     0.12535589845773898,
+     0.1272516616615653
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r029",
+   "file": "images/r029.jpg",
+   "heatmap": "heat/r029.jpg",
+   "original": "IDRiD_100.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 6.828642755858915e-07,
+    "referable_score": 0.2772471477511486,
+    "grade": 1,
+    "grade_probs": [
+     0.0022232218663149313,
+     0.9176213800574214,
+     0.06722058192205371,
+     0.002014289559186498,
+     0.010920526595023435
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r030",
+   "file": "images/r030.jpg",
+   "heatmap": "heat/r030.jpg",
+   "original": "IDRiD_058.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.9488787643293308e-06,
+    "referable_score": 0.00715208604388234,
+    "grade": 0,
+    "grade_probs": [
+     0.6444107968088514,
+     0.2387726503132835,
+     0.010425257064879458,
+     0.040829821561086645,
+     0.06556147425189897
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r031",
+   "file": "images/r031.jpg",
+   "heatmap": "heat/r031.jpg",
+   "original": "IDRiD_015.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.00011910714641264353,
+    "referable_score": 0.9970234378193802,
+    "grade": 2,
+    "grade_probs": [
+     0.0007579382683969688,
+     0.04285903105288824,
+     0.4223293762113167,
+     0.341366457079356,
+     0.1926871973880421
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r032",
+   "file": "images/r032.jpg",
+   "heatmap": "heat/r032.jpg",
+   "original": "IDRiD_042.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.0009879340294959257,
+    "referable_score": 0.9932975523097786,
+    "grade": 4,
+    "grade_probs": [
+     0.002373655987470276,
+     0.06790663170943813,
+     0.15875097860710158,
+     0.148447194870678,
+     0.622521538825312
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r033",
+   "file": "images/r033.jpg",
+   "heatmap": "heat/r033.jpg",
+   "original": "IDRiD_066.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 8.926857630435772e-06,
+    "referable_score": 0.992170436142243,
+    "grade": 2,
+    "grade_probs": [
+     0.001485031056517339,
+     0.08349222206884259,
+     0.5659309009856855,
+     0.27211523077542815,
+     0.07697661511352631
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r034",
+   "file": "images/r034.jpg",
+   "heatmap": "heat/r034.jpg",
+   "original": "IDRiD_073.jpg",
+   "reference_grade": 1,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 4.727849558032553e-06,
+    "referable_score": 0.15587187467438615,
+    "grade": 1,
+    "grade_probs": [
+     0.0020525569671640763,
+     0.9608591822644579,
+     0.031106722215968875,
+     0.0006983820933619154,
+     0.005283156459047156
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r035",
+   "file": "images/r035.jpg",
+   "heatmap": "heat/r035.jpg",
+   "original": "IDRiD_035.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 5.364386834140975e-06,
+    "referable_score": 0.9976527148039614,
+    "grade": 2,
+    "grade_probs": [
+     0.0008374957243524393,
+     0.054261535573824786,
+     0.5388353274638051,
+     0.3062957994340889,
+     0.09976984180392871
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r036",
+   "file": "images/r036.jpg",
+   "heatmap": "heat/r036.jpg",
+   "original": "IDRiD_074.jpg",
+   "reference_grade": 1,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 3.2614914172248205e-06,
+    "referable_score": 0.021686888893946845,
+    "grade": 1,
+    "grade_probs": [
+     0.08022909412537045,
+     0.873528900507783,
+     0.01579489176912913,
+     0.006535394883098469,
+     0.02391171871461893
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r037",
+   "file": "images/r037.jpg",
+   "heatmap": "heat/r037.jpg",
+   "original": "IDRiD_069.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.5990520944970406e-06,
+    "referable_score": 0.025276453137835764,
+    "grade": 1,
+    "grade_probs": [
+     0.305969569371163,
+     0.605747792823342,
+     0.02368650007830317,
+     0.021115955517812396,
+     0.04348018220937944
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r038",
+   "file": "images/r038.jpg",
+   "heatmap": "heat/r038.jpg",
+   "original": "IDRiD_060.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 4.3855856465923545e-06,
+    "referable_score": 0.032029928285876065,
+    "grade": 1,
+    "grade_probs": [
+     0.27034901840767145,
+     0.6430451252402488,
+     0.027266247106853908,
+     0.02342602898794999,
+     0.03591358025727586
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r039",
+   "file": "images/r039.jpg",
+   "heatmap": "heat/r039.jpg",
+   "original": "IDRiD_025.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 8.698610467752257e-05,
+    "referable_score": 0.9988512907793545,
+    "grade": 4,
+    "grade_probs": [
+     0.0009550299443582176,
+     0.01438974642102271,
+     0.07891982423856174,
+     0.3486777711056767,
+     0.5570576282903806
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r040",
+   "file": "images/r040.jpg",
+   "heatmap": "heat/r040.jpg",
+   "original": "IDRiD_081.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 8.809724531251513e-06,
+    "referable_score": 0.24842976693685395,
+    "grade": 1,
+    "grade_probs": [
+     0.0694778767682915,
+     0.754892336552873,
+     0.10588254146276194,
+     0.02753876556622423,
+     0.0422084796498494
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r041",
+   "file": "images/r041.jpg",
+   "heatmap": "heat/r041.jpg",
+   "original": "IDRiD_017.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.005332458249822338,
+    "referable_score": 0.9980866561836477,
+    "grade": 2,
+    "grade_probs": [
+     0.0009048176756522755,
+     0.05205086991093863,
+     0.45272693805072284,
+     0.3823457077378943,
+     0.11197166662479197
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r042",
+   "file": "images/r042.jpg",
+   "heatmap": "heat/r042.jpg",
+   "original": "IDRiD_009.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 4.3509488703813316e-07,
+    "referable_score": 0.9886785328980903,
+    "grade": 2,
+    "grade_probs": [
+     0.0011014485991842151,
+     0.1107189352642876,
+     0.5690127383231595,
+     0.23150219674287542,
+     0.08766468107049324
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r043",
+   "file": "images/r043.jpg",
+   "heatmap": "heat/r043.jpg",
+   "original": "IDRiD_008.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 6.439674984139394e-05,
+    "referable_score": 0.9621061463025004,
+    "grade": 4,
+    "grade_probs": [
+     0.0037137624516016218,
+     0.16087472593118873,
+     0.24119961911655308,
+     0.05561484909973439,
+     0.5385970434009221
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r044",
+   "file": "images/r044.jpg",
+   "heatmap": "heat/r044.jpg",
+   "original": "IDRiD_037.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.7263531719738843e-05,
+    "referable_score": 0.003245428554997943,
+    "grade": 0,
+    "grade_probs": [
+     0.582542975651718,
+     0.3099762037928459,
+     0.006207089675334766,
+     0.03688816133406601,
+     0.06438556954603546
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r045",
+   "file": "images/r045.jpg",
+   "heatmap": "heat/r045.jpg",
+   "original": "IDRiD_005.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.02553263874258464,
+    "referable_score": 0.9970313554347402,
+    "grade": 4,
+    "grade_probs": [
+     0.0008995630858943792,
+     0.009496045618989321,
+     0.004153005767551068,
+     0.029073335892748534,
+     0.9563780496348167
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r046",
+   "file": "images/r046.jpg",
+   "heatmap": "heat/r046.jpg",
+   "original": "IDRiD_091.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.678189509332497e-07,
+    "referable_score": 0.987999681480745,
+    "grade": 2,
+    "grade_probs": [
+     0.0013010114282633255,
+     0.1020337242444234,
+     0.5754598127991536,
+     0.23376524176569394,
+     0.0874402097624658
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r047",
+   "file": "images/r047.jpg",
+   "heatmap": "heat/r047.jpg",
+   "original": "IDRiD_101.jpg",
+   "reference_grade": 1,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 6.731236403209365e-07,
+    "referable_score": 0.5047881040065733,
+    "grade": 1,
+    "grade_probs": [
+     0.0017069146368124538,
+     0.8221905608418208,
+     0.1521954191142894,
+     0.004227539414631814,
+     0.019679565992445417
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r048",
+   "file": "images/r048.jpg",
+   "heatmap": "heat/r048.jpg",
+   "original": "IDRiD_034.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.9061238701536783e-06,
+    "referable_score": 0.9907740962648294,
+    "grade": 2,
+    "grade_probs": [
+     0.0017593755646147398,
+     0.10538755013758537,
+     0.6405868232623377,
+     0.18453054544512934,
+     0.06773570559033287
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r049",
+   "file": "images/r049.jpg",
+   "heatmap": "heat/r049.jpg",
+   "original": "IDRiD_088.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 7.963568575463532e-06,
+    "referable_score": 0.9989402080599076,
+    "grade": 3,
+    "grade_probs": [
+     0.0010353281379721618,
+     0.02925021710935156,
+     0.3135414832179219,
+     0.5326623408118611,
+     0.12351063072289327
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r050",
+   "file": "images/r050.jpg",
+   "heatmap": "heat/r050.jpg",
+   "original": "IDRiD_032.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 3.531418981490362e-06,
+    "referable_score": 0.9670158282269455,
+    "grade": 2,
+    "grade_probs": [
+     0.0032140669009992477,
+     0.21477490359226992,
+     0.4597384558658167,
+     0.13025993716850243,
+     0.19201263647241165
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r051",
+   "file": "images/r051.jpg",
+   "heatmap": "heat/r051.jpg",
+   "original": "IDRiD_065.jpg",
+   "reference_grade": 2,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 6.948081861153556e-07,
+    "referable_score": 0.34979819025003306,
+    "grade": 1,
+    "grade_probs": [
+     0.016284634337331412,
+     0.8120853913789432,
+     0.14130471843351408,
+     0.0068022493959447455,
+     0.023523006454266564
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r052",
+   "file": "images/r052.jpg",
+   "heatmap": "heat/r052.jpg",
+   "original": "IDRiD_071.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 3.6375295964452636e-05,
+    "referable_score": 0.10996784593972875,
+    "grade": 1,
+    "grade_probs": [
+     0.39586288999670965,
+     0.4284109055966135,
+     0.0721687880840061,
+     0.03484157761116952,
+     0.06871583871150132
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r053",
+   "file": "images/r053.jpg",
+   "heatmap": "heat/r053.jpg",
+   "original": "IDRiD_061.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.002244490574353001,
+    "referable_score": 0.9933922171493812,
+    "grade": 4,
+    "grade_probs": [
+     0.0021235809078816443,
+     0.05036837889299458,
+     0.22378697678950943,
+     0.146126210346918,
+     0.5775948530626964
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r054",
+   "file": "images/r054.jpg",
+   "heatmap": "heat/r054.jpg",
+   "original": "IDRiD_063.jpg",
+   "reference_grade": 1,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 1.941436731973528e-05,
+    "referable_score": 0.008689500808102412,
+    "grade": 0,
+    "grade_probs": [
+     0.5711755594469671,
+     0.3101481563746216,
+     0.010572553635558134,
+     0.03602573893403567,
+     0.07207799160881762
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r055",
+   "file": "images/r055.jpg",
+   "heatmap": "heat/r055.jpg",
+   "original": "IDRiD_016.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 6.160799322876472e-05,
+    "referable_score": 0.9968581943433001,
+    "grade": 3,
+    "grade_probs": [
+     0.0012950122604118914,
+     0.042797971407356,
+     0.3122006427386334,
+     0.4834621106358781,
+     0.16024426295772068
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r056",
+   "file": "images/r056.jpg",
+   "heatmap": "heat/r056.jpg",
+   "original": "IDRiD_021.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 9.372238171012793e-06,
+    "referable_score": 0.9909752718461243,
+    "grade": 2,
+    "grade_probs": [
+     0.0013541082889353268,
+     0.1058111538314453,
+     0.6416388558974192,
+     0.1862259762720507,
+     0.06496990571014948
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r057",
+   "file": "images/r057.jpg",
+   "heatmap": "heat/r057.jpg",
+   "original": "IDRiD_048.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.0002621203373349392,
+    "referable_score": 0.9966920865150813,
+    "grade": 4,
+    "grade_probs": [
+     0.0015032809344756922,
+     0.03701948393515826,
+     0.2804233833114942,
+     0.24011901063509608,
+     0.44093484118377574
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r058",
+   "file": "images/r058.jpg",
+   "heatmap": "heat/r058.jpg",
+   "original": "IDRiD_070.jpg",
+   "reference_grade": 0,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.0005630607830974074,
+    "referable_score": 0.018589833486491125,
+    "grade": 1,
+    "grade_probs": [
+     0.22492982983131005,
+     0.695056036518357,
+     0.02247030440180249,
+     0.016463344259867427,
+     0.041080484988662895
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r059",
+   "file": "images/r059.jpg",
+   "heatmap": "heat/r059.jpg",
+   "original": "IDRiD_003.jpg",
+   "reference_grade": 4,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 0.0003000379758612089,
+    "referable_score": 0.9114436357647029,
+    "grade": 4,
+    "grade_probs": [
+     0.004045217214967465,
+     0.31996306377548117,
+     0.19432833267027308,
+     0.014498950705752594,
+     0.4671644356335256
+    ],
+    "reasons": []
+   }
+  },
+  {
+   "id": "r060",
+   "file": "images/r060.jpg",
+   "heatmap": "heat/r060.jpg",
+   "original": "IDRiD_036.jpg",
+   "reference_grade": 3,
+   "model": {
+    "gradable": true,
+    "ungradable_score": 2.6809468250984218e-05,
+    "referable_score": 0.9689902992399425,
+    "grade": 2,
+    "grade_probs": [
+     0.005333526560328161,
+     0.2039146237983224,
+     0.5250094553966691,
+     0.18952736164106043,
+     0.07621503260361989
+    ],
+    "reasons": []
+   }
+  }
+ ]
+}

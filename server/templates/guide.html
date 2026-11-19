@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% block title %}How it works · Fundalux{% endblock %}
+{% block description %}A clinician's guide to Fundalux: grading scale, quality gate, networks, thresholds, site calibration, heatmaps, limitations and model card.{% endblock %}
+{% block content %}
+{% set m = r.model if r else {} %}
+{% set qg = r.quality_gate if r else {} %}
+{% set cam = r.gradcam if r else {} %}
+<div class="wrap">
+  <header class="page-head">
+    <p class="kicker">For clinicians</p>
+    <h1>How Fundalux works</h1>
+    <p class="lede">Everything between a fundus photograph and a referral decision: what is measured, how it was trained and tested, how to read the output, and where it fails. Figures on this page are read from the model in use, so they stay current after retraining.</p>
+    <p class="no-print" style="margin-top:1.2rem"><button class="btn btn-quiet" data-print>Print or save as PDF</button></p>
+  </header>
+
+  <div class="doc">
+    <aside class="toc" aria-label="Contents">
+      <ol>
+        <li><a href="#intended-use">Intended use</a></li>
+        <li><a href="#grading">Grading and “referable”</a></li>
+        <li><a href="#pipeline">From photograph to decision</a></li>
+        <li><a href="#quality">The quality gate</a></li>
+        <li><a href="#networks">The networks</a></li>
+        <li><a href="#thresholds">Thresholds and site calibration</a></li>
+        <li><a href="#heatmaps">Reading the heatmap</a></li>
+        <li><a href="#performance">Performance in brief</a></li>
+        <li><a href="#limitations">Limitations</a></li>
+        <li><a href="#data">Data and training</a></li>
+        <li><a href="#model-card">Model card</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </aside>
+
+    <article class="prose">
+      <section id="intended-use">
+        <h2>1. Intended use</h2>
+        <p>Fundalux triages <strong>colour fundus photographs</strong> for <strong>referable diabetic retinopathy</strong> in screening programmes. For each photograph it does one of two things:</p>
+        <ul>
+          <li><strong>Refuses it</strong> as ungradable, says why (blur, darkness, glare, no retina visible) and asks for a retake; or</li>
+          <li><strong>Reports</strong> whether referable DR is suspected, an estimated grade, and a heatmap of the regions that raised the score.</li>
+        </ul>
+        <p>It is designed to sit <em>in front of</em> a grader or ophthalmologist and decide who is seen first, never to replace them. Each photograph is assessed on its own: one eye, one field. Results are not combined across the two eyes or across visits.</p>
+        <p>Clinicians can test it themselves: <a href="/review">clinician review</a> shows a set of photographs blind, records your grades, and compares them with the system's.</p>
+        <div class="callout"><strong>Research prototype.</strong> Not a medical device, no regulatory clearance, not prospectively validated. A clinician must confirm every result, including every “no referable DR”.</div>
+      </section>
+
+      <section id="grading">
+        <h2>2. Grading and what “referable” means</h2>
+        <p>Labels follow the International Clinical Diabetic Retinopathy (ICDR) severity scale. Fundalux estimates all five grades, but the referral decision is a separate yes/no output trained for one question: is this <strong>moderate NPDR or worse</strong>?</p>
+        <div class="grade-scale" role="table" aria-label="ICDR scale">
+          <div role="row"><b>0 · No DR</b>No abnormalities.</div>
+          <div role="row"><b>1 · Mild NPDR</b>Microaneurysms only.</div>
+          <div class="ref" role="row"><b>2 · Moderate NPDR</b>More than microaneurysms, less than severe NPDR.</div>
+          <div class="ref" role="row"><b>3 · Severe NPDR</b>Any of: &gt;20 intraretinal haemorrhages in each of 4 quadrants; venous beading in ≥2 quadrants; prominent IRMA in ≥1 quadrant; no PDR.</div>
+          <div class="ref" role="row"><b>4 · PDR</b>Neovascularisation, or vitreous or preretinal haemorrhage.</div>
+        </div>
+        <p class="refer-line">Shaded grades are referable</p>
+        <p>This is the definition used in most published DR screening studies. One clinically important difference: <strong>diabetic macular oedema (DMO) is not assessed.</strong> None of the training datasets label it consistently, so a photograph with DMO but only mild retinopathy would <em>not</em> be flagged. In practice DMO is itself a reason to refer.</p>
+        <p>The estimated grade is secondary. It comes from the same networks but was not tuned for any operating point, and it can disagree with the referral decision (for example, a referral with “mild NPDR” as the most likely grade). Always act on the referral decision, not on the grade.</p>
+      </section>
+
+      <section id="pipeline">
+        <h2>3. From photograph to decision</h2>
+        <ol>
+          <li><strong>Locate the retina.</strong> The brightest colour channel is thresholded and the largest bright region taken as the fundus disc. A square is cut around it, extended where the camera cut off the top or bottom of the disc, and resized to {{ m.image_size or 512 }} px. Everything outside the disc is set to black.</li>
+          <li><strong>Check quality</strong> on this unenhanced crop (section 4). Enhancement would hide exactly the defects the check must see.</li>
+          <li><strong>Even the illumination.</strong> Lightness is divided by a heavily smoothed copy of itself, which removes vignetting and uneven flash while keeping colour.</li>
+          <li><strong>Equalise contrast</strong> with CLAHE (contrast-limited adaptive histogram equalisation) on lightness, which makes small red and bright lesions easier to separate from background.</li>
+          <li><strong>Score.</strong> Three networks each read the enhanced image at their own resolution; their probabilities are averaged (section 5).</li>
+          <li><strong>Decide</strong> at the threshold of the site the photograph came from, or the global threshold (section 6).</li>
+          <li><strong>Explain</strong> with a heatmap averaged over the three networks (section 7).</li>
+        </ol>
+        {% if "preprocessing_steps.png" in figures %}<figure>
+          <img src="/figures/preprocessing_steps.png" alt="Preprocessing steps on photographs from each dataset">
+          <figcaption>Preprocessing on one photograph from each dataset: original, cropped, illumination-corrected, and contrast-equalised (the networks' input). The four cameras look very different before preprocessing and much more alike after.</figcaption>
+        </figure>{% endif %}
+      </section>
+
+      <section id="quality">
+        <h2>4. The quality gate</h2>
+        <p>Grading an unreadable photograph is worse than refusing it: the networks still produce a confident-looking number. So every photograph passes two checks before any grading.</p>
+        <h3>Rule checks</h3>
+        <ul>
+          <li>Image at least 224 px on its short side.</li>
+          <li>A fundus disc is found, and at least half of it contains retina.</li>
+          <li>It is a colour fundus photograph (red channel brighter than blue).</li>
+        </ul>
+        <h3>The gate network</h3>
+        <p>An EfficientNet-B0 at {{ m.quality_input or 256 }} px estimates the probability that the photograph is ungradable. It learnt from two sources:</p>
+        <ul>
+          <li><strong>Human quality labels</strong> (EyeQ) on {{ "{:,}".format(qg.real_labels) if qg.real_labels else "12,543" }} EyePACS photographs, of which {{ "{:,}".format(qg.real_ungradable) if qg.real_ungradable else "2,320" }} were marked “reject”.</li>
+          <li><strong>Synthetic defects:</strong> good photographs deliberately blurred, motion-smeared, glared, hazed or under-exposed. Severe copies were labelled ungradable; mild copies stayed gradable, so the gate does not refuse every imperfect image.</li>
+        </ul>
+        <p>A photograph is refused when this probability reaches {{ m.quality_threshold|num(3) if m.quality_threshold else "the threshold" }}, the point on validation data that best separates the two classes.</p>
+        {% if qg.test %}{% set t = qg.test["test: real EyeQ labels only"] %}
+        <table class="table">
+          <caption>On held-out photographs with human quality labels</caption>
+          <tbody>
+            <tr><td>AUC</td><td class="r">{{ t.AUC|num(3) }}</td></tr>
+            <tr><td>Ungradable photographs refused</td><td class="r">{{ t["ungradable caught"]|pct }}</td></tr>
+            <tr><td>Gradable photographs accepted</td><td class="r">{{ t["gradable accepted"]|pct }}</td></tr>
+            {% for src, rate in qg.reject_rate_by_source.items() %}<tr><td>Refused, {{ {"aptos":"APTOS","eyepacs":"EyePACS","idrid":"IDRiD","messidor":"Messidor-2"}[src] }} test photographs</td><td class="r">{{ rate|pct }}</td></tr>{% endfor %}
+          </tbody>
+        </table>
+        <p class="note">EyePACS includes many genuinely poor photographs, which is why far more of them are refused than of the curated IDRiD and Messidor-2 sets.</p>
+        {% endif %}
+        <p>When a photograph is refused, the report says why, using the photograph's sharpness, brightness, contrast and saturation compared with good photographs. The advice is to retake it; if it is still ungradable after two more attempts, refer the patient for an in-person examination, because an ungradable photograph can itself indicate media opacity such as cataract.</p>
+        <p>See <a href="#limitations">limitations</a> for the gate's main weakness: moderately degraded photographs.</p>
+      </section>
+
+      <section id="networks">
+        <h2>5. The networks</h2>
+        <p>The referral score is the average of three convolutional networks of different designs. Each was pretrained on general images (ImageNet) and then trained on fundus photographs. Averaging networks that make partly different mistakes gives a steadier score than any one of them.</p>
+        <table class="table">
+          <thead><tr><th>Network</th><th>Published</th><th class="r">Input</th>{% if r and r.member_auc %}<th class="r">AUC alone, internal test</th>{% endif %}</tr></thead>
+          <tbody>
+          {% set years = {"efficientnet_b3": "2019", "efficientnet_v2_s": "2021", "convnext_tiny": "2022"} %}
+          {% set names = {"efficientnet_b3": "EfficientNet-B3", "efficientnet_v2_s": "EfficientNetV2-S", "convnext_tiny": "ConvNeXt-Tiny"} %}
+          {% for mem in m.members or [] %}
+            <tr><td>{{ names.get(mem.arch, mem.arch) }}</td><td>{{ years.get(mem.arch, "") }}</td><td class="r">{{ mem.input_size }} px</td>{% if r.member_auc %}<td class="r">{{ r.member_auc["Internal test (EyePACS + APTOS)"][mem.arch]|num(3) }}</td>{% endif %}</tr>
+          {% endfor %}
+          {% if r and r.member_auc %}<tr><td><strong>Ensemble (average)</strong></td><td></td><td></td><td class="r"><strong>{{ r.member_auc["Internal test (EyePACS + APTOS)"]["ensemble"]|num(3) }}</strong></td></tr>{% endif %}
+          </tbody>
+        </table>
+        <h3>How they were trained</h3>
+        <ul>
+          <li>Two outputs share one network: a referable/not-referable output and a five-grade output. Both are trained together.</li>
+          <li><strong>Balanced sources.</strong> EyePACS is about 20% referable and APTOS about 40%. Left alone, a network can learn “which camera took this?” as a shortcut to the answer. Training therefore samples every source half referable, half not.</li>
+          <li><strong>Augmentation</strong> imitates screening conditions: any rotation, flips, colour and gamma shifts between cameras, and mild blur, glare, haze and under-exposure.</li>
+          <li>Photographs that human graders marked ungradable were left out of training, because their DR labels are unreliable.</li>
+          <li>{{ m.epochs or 8 }} passes over {{ "{:,}".format(m.train_images) if m.train_images else "about 29,000" }} training photographs per network, keeping the weights with the best validation AUC.</li>
+        </ul>
+        <h3>The score is a ranking, not a probability</h3>
+        <p>Because training saw referable and non-referable photographs in equal numbers, the raw score overstates how likely disease is in a real screening population, where most people have none. A score of 0.6 does not mean a 60% chance of referable DR. Read the score as a position on a scale; the decision comes from the threshold.</p>
+      </section>
+
+      <section id="thresholds">
+        <h2>6. Thresholds and site calibration</h2>
+        <p>A threshold turns the score into “refer” or “do not refer”. It is set for sensitivity first: the target is {{ r.targets.tuning_sensitivity|pct(0) if r else "93%" }} sensitivity, a margin above the 90% goal, accepting whatever specificity that leaves.</p>
+        <h3>The global threshold</h3>
+        <p>Chosen once on the pooled validation photographs ({{ m.global_threshold|num(3) if m.global_threshold else "–" }}) and then frozen before any test photograph was scored. It keeps sensitivity high everywhere, but specificity varies by camera.</p>
+        <h3>Why one threshold is not enough</h3>
+        <p>The networks rank photographs well at every site, but each camera shifts the scores. The same proportion of referable cases is found at very different score levels:</p>
+        {% if r %}
+        <table class="table">
+          <thead><tr><th>Test set</th><th class="r">Threshold for 90% sensitivity there</th></tr></thead>
+          <tbody>{% for key in ["eyepacs", "aptos", "idrid", "messidor"] if r.sets[key] and r.sets[key].site %}<tr><td>{{ r.sets[key].title }}</td><td class="r">{{ r.sets[key].site.threshold|num(2) }}</td></tr>{% endfor %}</tbody>
+        </table>
+        <p class="note">Site thresholds tuned for {{ r.targets.tuning_sensitivity|pct(0) }} sensitivity. A threshold suited to one camera refers too many patients from another.</p>
+        {% endif %}
+        <h3>Calibrating a site</h3>
+        <p>A site collects graded photographs from its own camera: at least 20 referable and 20 non-referable that pass the quality gate, ideally 50 or more of each. Fundalux scores them and picks the highest threshold that still reaches the target sensitivity. It then reports the sensitivity and specificity to expect, measured honestly: the photographs are split in two, the threshold is tuned on one half and tested on the other, and this is repeated 20 times. A threshold is never judged on the photographs it was tuned on.</p>
+        <p>A threshold belongs to the networks that produced the scores. When the networks are retrained, every site profile is marked stale and must be recalibrated.</p>
+      </section>
+
+      <section id="heatmaps">
+        <h2>7. Reading the heatmap</h2>
+        <p>The heatmap is a Grad-CAM map: for each network it weights the network's last layer of image features by how much each one raised the referable score, keeps the positive part, and the three networks' maps are averaged. Blue shading marks where the score came from; the outline encloses the regions above half of the peak. Blue was chosen because it never occurs in a fundus photograph, so it cannot be mistaken for a lesion.</p>
+        {% if "gradcam_vs_lesion_masks.png" in figures %}<figure>
+          <img src="/figures/gradcam_vs_lesion_masks.png" alt="Heatmaps beside ophthalmologists' lesion masks">
+          <figcaption>IDRiD photographs (never used in training): the photograph, lesions outlined by ophthalmologists in green, and the heatmap. Rows run from the best to the worst agreement.</figcaption>
+        </figure>{% endif %}
+        {% if cam.trained %}
+        <h3>How well it agrees with ophthalmologists</h3>
+        <p>On {{ cam.images }} IDRiD photographs with pixel-level lesion outlines (microaneurysms, haemorrhages, hard and soft exudates), compared with the same networks before they learnt anything about retinopathy:</p>
+        <table class="table">
+          <thead><tr><th>Measure</th><th class="r">Fundalux</th><th class="r">Untrained networks</th><th class="r">Chance</th></tr></thead>
+          <tbody>
+            <tr><td>Hottest point lies on a lesion</td><td class="r">{{ cam.trained["pointing hit rate"]|pct(0) }}</td><td class="r">{{ cam.baseline["pointing hit rate"]|pct(0) }}</td><td class="r">–</td></tr>
+            <tr><td>Heat on lesions, relative to their area (median)</td><td class="r">{{ cam.trained["energy on lesions / lesion area (median)"]|num(2) }}×</td><td class="r">{{ cam.baseline["energy on lesions / lesion area (median)"]|num(2) }}×</td><td class="r">1×</td></tr>
+            <tr><td>Heatmap as a lesion detector, pixel AUC (mean)</td><td class="r">{{ cam.trained["pixel AUC (mean)"]|num(2) }}</td><td class="r">{{ cam.baseline["pixel AUC (mean)"]|num(2) }}</td><td class="r">0.50</td></tr>
+          </tbody>
+        </table>
+        {% endif %}
+        <h3>What a heatmap does not tell you</h3>
+        <ul>
+          <li><strong>It marks regions, not lesions.</strong> The networks' feature maps are 14 to 16 cells across, so each cell covers roughly 1/15 of the image width. Individual microaneurysms are far smaller.</li>
+          <li><strong>Absence of heat is not absence of disease.</strong> It shows what raised this score most, not everything that is abnormal.</li>
+          <li><strong>At low scores</strong> it still highlights the most suspicious-looking areas; these are usually normal structures, not lesions.</li>
+          <li>It explains the referral score only, not the estimated grade.</li>
+        </ul>
+      </section>
+
+      <section id="performance">
+        <h2>8. Performance in brief</h2>
+        {% if r %}
+        <p>On photographs accepted by the quality gate, the area under the ROC curve was {{ r.summary.auc_min|num(3) }} to {{ r.summary.auc_max|num(3) }} across the four test sets. The pattern that matters most clinically:</p>
+        <ul>
+          <li><strong>Severe NPDR and PDR are almost never missed:</strong> at least {{ r.summary.severe_referred_min|pct(0) }} referred in every test set, at the global threshold.</li>
+          <li><strong>Misses are mostly moderate NPDR</strong>, the boundary case.</li>
+          <li><strong>False referrals are mostly mild NPDR</strong>, which warrants closer follow-up anyway, and then photographs with no retinopathy.</li>
+        </ul>
+        <p>With each site's own threshold, {{ r.summary.sites_meeting }} of {{ r.summary.sites_total }} test sites reach 90% sensitivity with over 85% specificity. <a href="/evidence">The evidence page</a> has ROC curves, confidence intervals and results by grade for each set.</p>
+        {% endif %}
+      </section>
+
+      <section id="limitations">
+        <h2>9. Limitations and failure modes</h2>
+        <ul>
+          <li><strong>Diabetic macular oedema is not assessed.</strong> DMO with mild or no retinopathy will not be referred.</li>
+          <li><strong>No other eye disease is detected.</strong> “No referable DR” says nothing about glaucoma, macular degeneration, vascular occlusion or anything else.</li>
+          <li><strong>Specificity depends on calibration.</strong> At the global threshold specificity is {{ r.summary.global_spec_min|pct(0) if r else "76%" }}–{{ r.summary.global_spec_max|pct(0) if r else "83%" }}; reaching 85% needs each site's own threshold, and EyePACS-like mixed populations miss it even then ({{ r.sets.eyepacs.site.specificity|pct if r and r.sets.eyepacs and r.sets.eyepacs.site else "76%" }}).</li>
+          <li><strong>Moderately degraded photographs pass the gate and are over-referred.</strong> In tests on good photographs degraded on purpose, moderate blur, haze or under-exposure was accepted, sensitivity held, but specificity fell from {{ r.summary.clean_spec|pct(0) if r else "81%" }} to {{ r.summary.moderate_spec_min|pct(0) if r else "53%" }}–{{ r.summary.moderate_spec_max|pct(0) if r else "79%" }}. This errs on the side of safety but sends unnecessary referrals; retake visibly poor photographs even when they are accepted.</li>
+          <li><strong>Not validated on portable or smartphone cameras</strong>, the devices most common in community screening. All test photographs came from conventional desktop fundus cameras.</li>
+          <li><strong>Retrospective evidence only.</strong> No prospective study, no comparison with graders in a live programme, no regulatory review.</li>
+          <li><strong>Label quality.</strong> EyePACS labels are known to be noisy, which limits both training and its own test figures. Messidor-2 grades were adjudicated by retina specialists and are the most reliable reference here.</li>
+          <li><strong>One photograph at a time.</strong> No combination of both eyes, two fields or earlier visits.</li>
+          <li><strong>The estimated grade is less reliable than the referral decision</strong> (quadratic-weighted kappa {{ r.summary.kappa_min|num(2) if r else "0.8" }}–{{ r.summary.kappa_max|num(2) if r else "" }} against the reference on the test sets).</li>
+        </ul>
+      </section>
+
+      <section id="data">
+        <h2>10. Data and training</h2>
+        <table class="table">
+          <thead><tr><th>Dataset</th><th>Origin</th><th>Used for</th><th>Reference grades</th></tr></thead>
+          <tbody>
+            <tr><td>EyePACS (Kaggle 2015)</td><td>Many US clinics and cameras</td><td>Training, validation, test</td><td>Clinician grades; known to be noisy</td></tr>
+            <tr><td>APTOS 2019</td><td>Aravind Eye Hospital, India</td><td>Training, validation, test</td><td>Clinician grades</td></tr>
+            <tr><td>IDRiD</td><td>Nanded, India</td><td>External test only; lesion outlines for the heatmap check</td><td>Expert grades; pixel-level lesion masks for 81 photographs</td></tr>
+            <tr><td>Messidor-2</td><td>France</td><td>External test only</td><td>Adjudicated by retina specialists</td></tr>
+            <tr><td>EyeQ</td><td>Labels for EyePACS</td><td>Quality gate</td><td>Good / usable / reject</td></tr>
+          </tbody>
+        </table>
+        <ul>
+          <li>EyePACS and APTOS were split 80/10/10 into training, validation and test, <strong>by patient</strong>: both eyes of one person are always on the same side.</li>
+          <li>IDRiD and Messidor-2 were never used for training or for choosing anything during training. They show how the system behaves at hospitals it has never seen.</li>
+          <li>Training ran on a single cloud GPU ({{ "%.1f"|format(m.trained.hours) if m.trained and m.trained.hours else "about 5–6" }} hours).</li>
+        </ul>
+      </section>
+
+      <section id="model-card">
+        <h2>11. Model card</h2>
+        <dl class="defs">
+          <dt>Model</dt><dd>Ensemble of {{ (m.members or [])|length }} networks: {% for mem in m.members or [] %}{{ names.get(mem.arch, mem.arch) }} ({{ mem.input_size }} px){{ ", " if not loop.last }}{% endfor %}</dd>
+          <dt>Quality gate</dt><dd>EfficientNet-B0, {{ m.quality_input }} px; refuses at P(ungradable) ≥ {{ m.quality_threshold|num(3) }}</dd>
+          <dt>Output</dt><dd>Referable-DR score (0–1, a ranking); estimated ICDR grade; Grad-CAM heatmap</dd>
+          <dt>Referable</dt><dd>ICDR grade 2 or worse; DMO not assessed</dd>
+          <dt>Global threshold</dt><dd>{{ m.global_threshold|num(3) }} (tuned for {{ r.targets.tuning_sensitivity|pct(0) if r else "93%" }} sensitivity on validation data)</dd>
+          <dt>Trained</dt><dd>{{ m.trained.date if m.trained else "–" }} · run {{ m.trained.run if m.trained else "–" }}</dd>
+          <dt>Inference</dt><dd>ONNX Runtime on CPU; photographs are processed in memory and not stored</dd>
+          <dt>Intended users</dt><dd>Screening programmes, with clinician confirmation of every result</dd>
+          <dt>Not for</dt><dd>Diagnosis; DMO; other eye disease; unsupervised use</dd>
+        </dl>
+      </section>
+
+      <section id="references">
+        <h2>12. References</h2>
+        <ol style="font-size:.9rem">
+          <li>Wilkinson CP, et al. Proposed international clinical diabetic retinopathy and diabetic macular edema disease severity scales. <em>Ophthalmology</em>. 2003;110(9):1677–1682.</li>
+          <li>Gulshan V, et al. Development and validation of a deep learning algorithm for detection of diabetic retinopathy in retinal fundus photographs. <em>JAMA</em>. 2016;316(22):2402–2410.</li>
+          <li>Krause J, et al. Grader variability and the importance of reference standards for evaluating machine learning models for diabetic retinopathy. <em>Ophthalmology</em>. 2018;125(8):1264–1272.</li>
+          <li>Porwal P, et al. Indian Diabetic Retinopathy Image Dataset (IDRiD): a database for diabetic retinopathy screening research. <em>Data</em>. 2018;3(3):25.</li>
+          <li>Decencière E, et al. Feedback on a publicly distributed image database: the Messidor database. <em>Image Analysis &amp; Stereology</em>. 2014;33(3):231–234.</li>
+          <li>Fu H, et al. Evaluation of retinal image quality assessment networks in different color-spaces. <em>MICCAI</em> 2019.</li>
+          <li>Selvaraju RR, et al. Grad-CAM: visual explanations from deep networks via gradient-based localization. <em>ICCV</em> 2017.</li>
+          <li>Tan M, Le QV. EfficientNet: rethinking model scaling for convolutional neural networks. <em>ICML</em> 2019; EfficientNetV2: smaller models and faster training. <em>ICML</em> 2021.</li>
+          <li>Liu Z, et al. A ConvNet for the 2020s. <em>CVPR</em> 2022.</li>
+          <li>Kaggle: Diabetic Retinopathy Detection (EyePACS, 2015); APTOS 2019 Blindness Detection.</li>
+        </ol>
+      </section>
+    </article>
+  </div>
+</div>
+{% endblock %}

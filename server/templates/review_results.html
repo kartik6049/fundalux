@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Review results · Fundalux{% endblock %}
+{% block content %}
+<div class="wrap">
+  <header class="page-head">
+    <p class="kicker">Clinician review · organiser</p>
+    <h1>How clinicians and Fundalux compare</h1>
+    <p class="lede">Agreement between each reviewer and the system, between reviewers, and, where the set has reference grades, how each does against the reference on exactly the same photographs.</p>
+  </header>
+
+  <form class="panel no-print" id="auth" style="max-width:520px" novalidate>
+    <div class="field"><label for="token">Admin token</label><input type="password" id="token" autocomplete="off"></div>
+    <button class="btn" type="submit">Show results</button>
+    <p id="auth-error" class="error" role="alert"></p>
+  </form>
+
+  <div id="results" hidden>
+    <div class="report-bar no-print" style="margin-top:1.4rem">
+      <p class="note" id="set-info" style="margin:0"></p>
+      <div style="display:flex;gap:.8rem;align-items:end;flex-wrap:wrap">
+        <div class="field" style="margin:0"><label for="site">Fundalux decides at</label><select id="site"><option value="">Global threshold</option>{% for p in (r.sites if r else []) if not p.stale %}<option value="{{ p.name }}">{{ p.name }} threshold</option>{% endfor %}</select></div>
+        <button class="btn btn-quiet" id="export" type="button">Download all answers (CSV)</button>
+        <button class="btn btn-quiet" type="button" data-print>Print</button>
+      </div>
+    </div>
+    <div id="results-body"></div>
+  </div>
+
+  <section class="section no-print" id="new-set" hidden>
+    <div class="cols-2">
+      <div>
+        <h2>Create a new review set</h2>
+        <p class="lede" style="font-size:1rem">Upload the photographs reviewers should grade, and optionally a CSV of reference grades (<code>image</code> and <code>grade</code> columns). Fundalux scores each photograph once; reviewers see them under neutral numbers.</p>
+        <p class="note">Creating a set replaces the current one. Its answers are kept on the server in <code>review.old/</code>, not shown here.</p>
+      </div>
+      <form class="panel" id="set-form" novalidate>
+        <div class="field"><label for="set-name">Set name</label><input type="text" id="set-name" maxlength="80" placeholder="e.g. PHC Nanded, January"></div>
+        <div class="field"><label for="set-site">Photographs come from</label><select id="set-site"><option value="">Unknown or mixed (global threshold)</option>{% for p in (r.sites if r else []) if not p.stale %}<option value="{{ p.name }}">{{ p.name }}</option>{% endfor %}</select></div>
+        <div class="field"><label for="set-photos">Photographs (up to 300)</label><input type="file" id="set-photos" accept=".jpg,.jpeg,.png,.tif,.tiff,.bmp,image/*" multiple></div>
+        <div class="field"><label for="set-labels">Reference grades (optional CSV)</label><input type="file" id="set-labels" accept=".csv,text/csv"></div>
+        <button class="btn" type="submit">Create set</button>
+        <div id="set-job" aria-live="polite" style="margin-top:1rem"></div>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/review_results.js" defer></script>{% endblock %}

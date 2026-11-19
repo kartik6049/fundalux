@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}Fundalux · Explainable diabetic-retinopathy screening{% endblock %}
+{% block content %}
+{% set s = r.summary if r else {} %}
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <p class="kicker">Diabetic retinopathy screening · research prototype</p>
+      <h1 class="display">A second reader for retinal photographs that shows its evidence and says when it cannot read one.</h1>
+      <p class="lede">Fundalux triages colour fundus photographs for referable diabetic retinopathy. Every result comes with the regions that drove it, a check that the photograph is good enough to grade, and a threshold calibrated to the camera it came from.</p>
+      <div class="hero-actions">
+        <a class="btn" href="/screen">Screen a photograph</a>
+        <a class="btn btn-quiet" href="/how-it-works">How it works, for clinicians</a>
+      </div>
+    </div>
+    <div class="hero-figure">
+      <img src="/static/img/stage-5-heatmap.jpg" alt="Fundus photograph with the regions that raised the referral score shaded blue" width="640" height="640">
+      {% if hero %}
+      <div class="hero-tag t1"><span class="kicker" style="margin:0">Referable-DR score</span><b>{{ hero.score|num(2) }}</b>{% if r and r.sets.idrid and r.sets.idrid.site %}threshold at this site {{ r.sets.idrid.site.threshold|num(2) }}{% endif %}</div>
+      <div class="hero-tag t2"><span class="dot"></span><b style="display:inline;font-size:1rem;font-family:var(--sans);font-weight:500">Refer</b><br>{{ hero.label }}</div>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if r %}
+  <div class="facts" role="list">
+    <div class="fact" role="listitem"><b>{{ s.severe_referred_min|pct(0) }}</b><span>or more of severe NPDR and proliferative DR referred, in every test set</span></div>
+    <div class="fact" role="listitem"><b>{{ s.auc_min|num(2) }}–{{ s.auc_max|num(2) }}</b><span>area under the ROC curve on four test sets, including two from hospitals never seen in training</span></div>
+    <div class="fact" role="listitem"><b>{{ s.pointing|pct(0) }}</b><span>of heatmaps peak on a lesion marked by ophthalmologists ({{ s.pointing_baseline|pct(0) }} for an untrained network)</span></div>
+    <div class="fact" role="listitem"><b>{{ s.sites_meeting }} of {{ s.sites_total }}</b><span>sites reach 90% sensitivity with over 85% specificity once their threshold is calibrated</span></div>
+  </div>
+  {% endif %}
+</div>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><p class="kicker">From photograph to decision</p><h2>Five steps, each one visible</h2></div>
+      <p>Nothing happens out of sight. The screening report shows the cropped photograph the quality check saw, the enhanced image the networks read, and the heatmap of what raised the score.</p>
+    </div>
+    <div class="pipeline">
+      <figure><img src="/static/img/stage-1-photo.jpg" alt="Original fundus photograph"><figcaption><b>Photograph</b>Any colour fundus camera; one eye per image.</figcaption></figure>
+      <figure><img src="/static/img/stage-2-crop.jpg" alt="Photograph cropped to the retina"><figcaption><b>Crop and check</b>Cropped to the fundus disc; a dedicated network refuses blurred, dark or glared photographs here.</figcaption></figure>
+      <figure><img src="/static/img/stage-3-illumination.jpg" alt="Illumination-corrected retina"><figcaption><b>Even the light</b>Vignetting and uneven flash are divided out, colour kept.</figcaption></figure>
+      <figure><img src="/static/img/stage-4-enhanced.jpg" alt="Contrast-enhanced retina"><figcaption><b>Equalise and read</b>Local contrast equalised; three networks score this image.</figcaption></figure>
+      <figure><img src="/static/img/stage-5-heatmap.jpg" alt="Retina with heatmap overlay"><figcaption><b>Explain and decide</b>Averaged heatmap, then a referral decision at the site's threshold.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><p class="kicker">Designed for screening camps</p><h2>Three things a black box does not do</h2></div>
+      <p>Portable cameras, untrained operators and many different devices are the normal conditions of community screening. The system is built around them.</p>
+    </div>
+    <div class="cols-3">
+      <div class="point">
+        <p class="kicker">Refuses what it cannot read</p>
+        <h3>A quality gate before any grading</h3>
+        <p>Blurred, under-exposed or glared photographs are rejected with the reason and a retake instruction, instead of being graded anyway.{% if r and r.quality_gate.test %} Against human quality labels the gate reaches an AUC of {{ s.gate_auc|num(3) }}.{% endif %}</p>
+        <div class="degraded">
+          <figure><img src="/static/img/degraded-blur.jpg" alt="Blurred retina"><figcaption>Blur</figcaption></figure>
+          <figure><img src="/static/img/degraded-dark.jpg" alt="Under-exposed retina"><figcaption>Under-exposed</figcaption></figure>
+          <figure><img src="/static/img/degraded-glare.jpg" alt="Retina with glare"><figcaption>Glare</figcaption></figure>
+        </div>
+      </div>
+      <div class="point">
+        <p class="kicker">Shows its evidence</p>
+        <h3>Heatmaps that were checked, not just drawn</h3>
+        <p>On 81 photographs with lesions outlined by ophthalmologists, the hottest point of the heatmap fell on a lesion in {{ s.pointing|pct(0) if r else "most" }} of cases. A heatmap is a region, not a lesion count; the guide explains how to read one.</p>
+      </div>
+      <div class="point">
+        <p class="kicker">Calibrated to the camera</p>
+        <h3>One threshold does not fit every device</h3>
+        <p>Each camera puts the networks' scores on its own scale. A site grades a few hundred of its own photographs, and Fundalux fits that site's threshold and reports the accuracy to expect, measured on photographs it did not tune on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if r %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><p class="kicker">Results</p><h2>What it found on photographs it never trained on</h2></div>
+      <p>Referable DR means moderate non-proliferative retinopathy or worse. Figures are for photographs the quality gate accepted; the evidence page has confidence intervals, ROC curves and results by grade.</p>
+    </div>
+    <div class="scroll">
+      <table class="table">
+        <thead><tr><th>Test set</th><th class="r">Photographs</th><th class="r">AUC</th><th class="r">Sensitivity</th><th class="r">Specificity</th><th>At</th><th>90% / 85% target</th></tr></thead>
+        <tbody>
+        {% for key in ["aptos", "idrid", "messidor", "eyepacs"] if r.sets[key] %}{% set e = r.sets[key] %}{% set st = e.site or e.global %}
+          <tr>
+            <td>{{ e.title }}</td><td class="r">{{ "{:,}".format(e.graded) }}</td><td class="r">{{ e.auc|num(3) }}</td>
+            <td class="r">{{ st.sensitivity|pct }}</td><td class="r">{{ st.specificity|pct }}</td>
+            <td>{{ "site threshold" if e.site else "global threshold" }}</td>
+            <td>{% if (e.site and e.site.meets_target) or (not e.site and e.meets_target_global) %}<span class="pass">met</span>{% else %}<span class="fail">not met</span>{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="note">EyePACS mixes many US clinics and cameras under one label set known to be noisy; it misses the specificity target even with its own threshold. APTOS and EyePACS thresholds were tuned on validation photographs and measured on separate test photographs; IDRiD and Messidor-2 were measured by cross-fitting. <a href="/evidence">All results</a>.</p>
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <div class="wrap cols-2">
+    <div>
+      <p class="kicker">Intended use</p>
+      <h2>A triage aid, not a diagnosis</h2>
+      <p class="lede">Fundalux is meant to sit in front of a grader or ophthalmologist and decide who is seen first. Every referral and every “no referable DR” needs a clinician to confirm it.</p>
+    </div>
+    <div class="callout">
+      <p class="kicker" style="color:var(--peach-deep)">Known limitations</p>
+      <ul style="margin:0;padding-left:1.1rem">
+        <li>Diabetic macular oedema is not assessed: the training labels do not include it.</li>
+        <li>Other eye disease (glaucoma, macular degeneration, vascular occlusion) is not detected.</li>
+        <li>Moderately degraded photographs can pass the quality check and are then over-referred.</li>
+        <li>Not validated prospectively, nor on smartphone-based cameras.</li>
+      </ul>
+      <p style="margin:.8rem 0 0"><a href="/how-it-works#limitations">All limitations and failure modes</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="audience">
+      <a href="/how-it-works"><p class="kicker">Study it</p><h3>How it works</h3><p>Grading scale, the quality gate, the networks, thresholds and calibration, how to read a heatmap, and the model card.</p><span class="go">Read the guide →</span></a>
+      <a href="/evidence"><p class="kicker">Check it</p><h3>Evidence</h3><p>ROC curves with operating points, results by DR grade, confusion matrices, heatmap validation and robustness to bad photographs.</p><span class="go">See the evidence →</span></a>
+      <a href="/screen"><p class="kicker">Try it</p><h3>Screen a photograph</h3><p>Upload a photograph or open a sample, simulate camera problems, switch sites, and print the report.</p><span class="go">Open the screening tool →</span></a>
+    </div>
+  </div>
+</section>
+{% endblock %}

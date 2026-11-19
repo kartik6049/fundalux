@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Fundalux{% endblock %}</title>
+  <meta name="description" content="{% block description %}Explainable screening for referable diabetic retinopathy: shows where it looked, and refuses photographs it cannot read.{% endblock %}">
+  <link rel="icon" href="/static/img/mark.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/fonts/Newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/IBMPlexSans-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/css/nx.css">
+</head>
+<body data-page="{{ page }}">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Fundalux home">
+      <img src="/static/img/mark.svg" width="34" height="34" alt="">
+      <span><b>Funda</b><em>lux</em></span>
+    </a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Main">
+      {% set links = [("home", "/", "Overview"), ("guide", "/how-it-works", "How it works"), ("evidence", "/evidence", "Evidence"), ("sites", "/sites", "Sites"), ("camp", "/camp", "Camp model")] %}
+      {% for key, href, label in links %}<a href="{{ href }}"{% if page == key %} aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+      <a class="btn" href="/screen"{% if page == "screen" %} aria-current="page"{% endif %}>Screen a photograph</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  {% if error %}<div class="wrap"><p class="callout" role="alert">Models not loaded: {{ error }}</p></div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <a class="brand" href="/"><img src="/static/img/mark.svg" width="26" height="26" alt=""><span><b>Funda</b><em>lux</em></span></a>
+      <p>{{ disclaimer }} A research prototype: not a medical device, no regulatory clearance, not prospectively validated. Do not upload photographs that identify a patient to a public server.</p>
+    </div>
+    <div>
+      <h4>For clinicians</h4>
+      <ul><li><a href="/how-it-works">How it works</a></li><li><a href="/how-it-works#limitations">Limitations</a></li><li><a href="/evidence">Evidence</a></li><li><a href="/how-it-works#model-card">Model card</a></li><li><a href="/review">Clinician review</a></li></ul>
+    </div>
+    <div>
+      <h4>Tools</h4>
+      <ul><li><a href="/screen">Screen a photograph</a></li><li><a href="/sites">Site calibration</a></li><li><a href="/camp">Screening-camp model</a></li><li><a href="/api/docs">API</a></li></ul>
+    </div>
+  </div>
+</footer>
+<script src="/static/js/common.js" defer></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

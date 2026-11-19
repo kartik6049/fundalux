@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Screening-camp model · Fundalux{% endblock %}
+{% block content %}
+<div class="wrap">
+  <header class="page-head">
+    <p class="kicker">Screening-camp model</p>
+    <h1>What triage does to a camp</h1>
+    <p class="lede">A discrete-event simulation of a screening camp: registration, photography with on-the-spot retakes, AI grading and remote ophthalmologist review of referrals. The benchmark camp sends every patient's photographs to the ophthalmologist. Timing, prevalence and cost values are placeholders to replace with local figures.</p>
+  </header>
+
+  <form class="panel" id="camp-form">
+    <div class="controls">
+      {% set controls = [
+        ("patients_per_day", "Patients per day", 20, 400, 10),
+        ("n_cameras", "Camera stations", 1, 6, 1),
+        ("ophthalmologist_hours", "Ophthalmologist hours a day", 0.5, 8, 0.5),
+        ("days", "Days simulated", 5, 60, 5),
+        ("prevalence", "Referable DR prevalence", 0.01, 0.4, 0.01),
+        ("p_ungradable", "Ungradable photos per attempt", 0, 0.6, 0.01),
+        ("sensitivity", "AI sensitivity", 0.5, 1, 0.01),
+        ("specificity", "AI specificity", 0.5, 1, 0.01)] %}
+      {% for key, label, lo, hi, stepv in controls %}
+      <div class="field"><label for="{{ key }}">{{ label }} <output for="{{ key }}"></output></label><input type="range" id="{{ key }}" name="{{ key }}" min="{{ lo }}" max="{{ hi }}" step="{{ stepv }}"></div>
+      {% endfor %}
+    </div>
+    <div class="field" style="max-width:420px;margin:0">
+      <label for="accuracy">Take AI accuracy from</label>
+      <select id="accuracy"><option value="">Internal test set, global threshold</option>{% for p in (r.sites if r else []) if not p.stale %}<option value="{{ p.expected_sensitivity }}|{{ p.expected_specificity }}">{{ p.name }} site profile</option>{% endfor %}</select>
+    </div>
+  </form>
+  <div id="camp-results" aria-live="polite"><div class="loading"><span class="spinner"></span>Simulating the camp ...</div></div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/camp.js" defer></script>{% endblock %}

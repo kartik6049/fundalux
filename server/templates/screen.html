@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Screen a photograph · Fundalux{% endblock %}
+{% block content %}
+<div class="wrap">
+  <header class="page-head no-print" style="padding-bottom:1.4rem">
+    <p class="kicker">Screening tool</p>
+    <h1>Screen a photograph</h1>
+    <p class="lede">One colour fundus photograph of one eye. It is processed in memory and not stored. {% if r %}Takes a few seconds.{% endif %}</p>
+  </header>
+
+  <div class="tool">
+    <aside class="intake panel" aria-label="Photograph and options">
+      <p class="step"><b>1</b>Photograph</p>
+      <label class="drop" id="drop" for="photo">
+        <strong>Drop a photograph here</strong>
+        <span>or click to choose · JPG, PNG or TIFF</span>
+      </label>
+      <input type="file" id="photo" accept=".jpg,.jpeg,.png,.tif,.tiff,.bmp,image/*" hidden>
+      <p class="hint" style="margin-top:1rem">Or open a sample from IDRiD:</p>
+      <div class="samples">
+        {% for name, label in samples.items() %}
+        <button type="button" data-sample="{{ name }}" aria-pressed="false" aria-label="{{ label }}"><img src="/samples/{{ name }}" alt=""><small>{{ label.split(" · ")[1] }}</small></button>
+        {% endfor %}
+      </div>
+
+      <p class="step"><b>2</b>Field conditions <span class="hint" style="margin:0 0 0 .3rem;font-weight:400">(demonstration)</span></p>
+      <div class="field">
+        <label for="kind">Simulate a camera problem</label>
+        <select id="kind">
+          <option value="none">None: the photograph as taken</option>
+          {% for k in kinds %}<option value="{{ k }}">{{ {"blur": "Out of focus", "motion": "Motion blur", "glare": "Glare", "haze": "Haze (dirty lens, cataract)", "dark": "Under-exposed"}[k] }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="severity">Severity <output id="severity-out" style="float:right;color:var(--powder-deep)">0.80</output></label>
+        <input type="range" id="severity" min="0.05" max="1" step="0.05" value="0.8" disabled>
+      </div>
+      <label class="check"><input type="checkbox" id="grade-rejected"> Grade even if the photograph is refused</label>
+      <p class="hint">Shows what the networks would have guessed on an unreadable photograph, the reason the quality gate exists.</p>
+    </aside>
+
+    <section aria-live="polite">
+      <div class="report-bar">
+        <div>
+          <p class="print-only print-brand">Fundalux screening report</p>
+          <p class="kicker" style="margin:0">Screening report</p>
+          <p class="print-only" id="print-meta"></p>
+        </div>
+        <div style="display:flex;gap:.8rem;align-items:end;flex-wrap:wrap" class="no-print">
+          <div class="field">
+            <label for="site">Screening site</label>
+            <select id="site"><option value="">Global threshold</option></select>
+          </div>
+          <button class="btn btn-quiet" id="print" disabled>Print report</button>
+        </div>
+      </div>
+      <div id="report">
+        <div class="empty">
+          <img src="/static/img/stage-2-crop.jpg" alt="" width="150" height="150" style="border-radius:50%;opacity:.35;filter:grayscale(.6)">
+          <h2 style="font-size:1.5rem">Awaiting a photograph</h2>
+          <p class="lede" style="margin:0">The report shows the decision, the quality check, the regions the networks relied on, and the estimated grade. Switching the screening site re-decides the same score instantly.</p>
+        </div>
+      </div>
+      <p class="note" style="margin-top:1.6rem">{{ disclaimer }}</p>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/screen.js" defer></script>{% endblock %}

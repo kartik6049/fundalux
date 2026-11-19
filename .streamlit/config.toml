@@ -1,0 +1,45 @@
+# Fundalux theme. The palette and type scale are defined once here and in app/ui.py (TOKENS).
+# Fonts are served from app/static/fonts so the app works offline at a screening camp.
+
+[server]
+enableStaticServing = true
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "viewer"     # no developer Deploy menu in front of clinic staff
+
+[theme]
+base = "light"
+primaryColor = "#2B5C99"            # powder blue, deepened for accessible text and controls (6.8:1 with white)
+backgroundColor = "#E9E8F8"         # soft lavender white
+secondaryBackgroundColor = "#F6F5FC"
+textColor = "#1D2140"               # indigo ink, 12.9:1 on the background
+linkColor = "#2B5C99"
+borderColor = "#CFCDEA"
+dataframeBorderColor = "#DCDAF0"
+dataframeHeaderBackgroundColor = "#E1E0F3"
+blueColor = "#2B5C99"
+orangeColor = "#9A4426"             # warm sunset peach, deepened for text
+redColor = "#9A4426"
+greenColor = "#2B5C99"
+chartCategoricalColors = ["#2B5C99", "#E08F6E", "#8DB9F0", "#545A7A"]
+font = "IBM Plex Sans, sans-serif"
+headingFont = "Newsreader, Georgia, serif"
+headingFontWeights = [500, 500, 500, 500, 500, 500]
+headingFontSizes = ["2.5rem", "1.75rem", "1.3rem", "1.1rem"]
+baseFontSize = 15
+baseRadius = "6px"
+buttonRadius = "6px"
+showWidgetBorder = true
+
+[[theme.fontFaces]]
+family = "IBM Plex Sans"
+url = "app/static/fonts/IBMPlexSans-latin.woff2"
+weight = "400 600"
+
+[[theme.fontFaces]]
+family = "Newsreader"
+url = "app/static/fonts/Newsreader-latin.woff2"
+weight = "400 600"

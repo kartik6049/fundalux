@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block title %}Evidence · Fundalux{% endblock %}
+{% block description %}Validation of Fundalux on four test sets: ROC curves, operating points, results by DR grade, confusion matrices, heatmap validation and robustness.{% endblock %}
+
+{% macro roc(e, targets) %}
+{# 360 x 360 plot area; x = 1 - specificity, y = sensitivity #}
+{% set X = 44 %}{% set Y = 12 %}{% set W = 360 %}
+<svg class="roc" viewBox="0 0 416 410" role="img" aria-label="ROC curve for {{ e.title }}, AUC {{ e.auc|num(3) }}">
+  <rect class="target" x="{{ X }}" y="{{ Y }}" width="{{ (1 - targets.specificity) * W }}" height="{{ (1 - targets.sensitivity) * W }}"/>
+  {% for t in [0.2, 0.4, 0.6, 0.8] %}
+  <line class="grid" x1="{{ X + t * W }}" y1="{{ Y }}" x2="{{ X + t * W }}" y2="{{ Y + W }}"/>
+  <line class="grid" x1="{{ X }}" y1="{{ Y + (1 - t) * W }}" x2="{{ X + W }}" y2="{{ Y + (1 - t) * W }}"/>
+  {% endfor %}
+  {% for t in [0, 0.2, 0.4, 0.6, 0.8, 1] %}
+  <text x="{{ X + t * W }}" y="{{ Y + W + 16 }}" text-anchor="middle">{{ t }}</text>
+  <text x="{{ X - 8 }}" y="{{ Y + (1 - t) * W + 4 }}" text-anchor="end">{{ t }}</text>
+  {% endfor %}
+  <line class="chance" x1="{{ X }}" y1="{{ Y + W }}" x2="{{ X + W }}" y2="{{ Y }}"/>
+  <polyline class="curve" points="{% for p in e.roc %}{{ '%.1f'|format(X + p[0] * W) }},{{ '%.1f'|format(Y + (1 - p[1]) * W) }} {% endfor %}"/>
+  <line class="axis" x1="{{ X }}" y1="{{ Y + W }}" x2="{{ X + W }}" y2="{{ Y + W }}"/>
+  <line class="axis" x1="{{ X }}" y1="{{ Y }}" x2="{{ X }}" y2="{{ Y + W }}"/>
+  {% set g = e.global %}
+  <circle cx="{{ X + (1 - g.specificity) * W }}" cy="{{ Y + (1 - g.sensitivity) * W }}" r="6.5" fill="#F6F5FC" stroke="#1D2140" stroke-width="2"/>
+  {% if e.site %}<circle cx="{{ X + (1 - e.site.specificity) * W }}" cy="{{ Y + (1 - e.site.sensitivity) * W }}" r="6" fill="#F5B69E" stroke="#9A4426" stroke-width="1.5"/>{% endif %}
+  <text class="lbl" x="{{ X + 0.55 * W }}" y="{{ Y + 0.82 * W }}">AUC {{ e.auc|num(3) }}</text>
+  <text x="{{ X + W / 2 }}" y="{{ Y + W + 34 }}" text-anchor="middle">1 − specificity</text>
+  <text x="12" y="{{ Y + W / 2 }}" text-anchor="middle" transform="rotate(-90 12 {{ Y + W / 2 }})">sensitivity</text>
+</svg>
+<div class="legend">
+  <span><i style="background:#F6F5FC;border:2px solid #1D2140"></i>Global threshold</span>
+  {% if e.site %}<span><i style="background:#F5B69E;border:1px solid #9A4426"></i>Site threshold</span>{% endif %}
+  <span><i style="background:#D6E5FA;border-radius:2px"></i>Target zone: ≥{{ targets.sensitivity|pct(0) }} sensitivity, ≥{{ targets.specificity|pct(0) }} specificity</span>
+</div>
+{% endmacro %}
+
+{% macro small_multiple(kind, rows) %}
+{% set X = 26 %}{% set Y = 8 %}{% set W = 160 %}{% set H = 110 %}
+<svg class="sm" viewBox="0 0 196 150" role="img" aria-label="{{ kind }}: rejection, sensitivity and specificity by severity">
+  {% for t in [0.5, 1] %}<line class="grid" x1="{{ X }}" y1="{{ Y + (1 - t) * H }}" x2="{{ X + W }}" y2="{{ Y + (1 - t) * H }}"/>{% endfor %}
+  <line class="axis" x1="{{ X }}" y1="{{ Y + H }}" x2="{{ X + W }}" y2="{{ Y + H }}"/>
+  {% for t in [0, 0.5, 1] %}<text x="{{ X - 5 }}" y="{{ Y + (1 - t) * H + 3 }}" text-anchor="end">{{ t }}</text><text x="{{ X + t * W }}" y="{{ Y + H + 13 }}" text-anchor="middle">{{ t }}</text>{% endfor %}
+  <text x="{{ X + W / 2 }}" y="{{ Y + H + 27 }}" text-anchor="middle">severity</text>
+  {% for key, cls in [("rejected", "rej"), ("sens_no_gate", "sens"), ("spec_no_gate", "spec")] %}
+  <polyline class="{{ cls }}" points="{% for row in rows if row[key] is not none %}{{ '%.1f'|format(X + row.severity * W) }},{{ '%.1f'|format(Y + (1 - row[key]) * H) }} {% endfor %}"/>
+  {% endfor %}
+</svg>
+{% endmacro %}
+
+{% block content %}
+<div class="wrap">
+  <header class="page-head">
+    <p class="kicker">Evidence</p>
+    <h1>How Fundalux performed</h1>
+    <p class="lede">Every figure below comes from photographs the networks never trained on. Two test sets come from hospitals that contributed nothing to training. Thresholds were frozen before testing, and site thresholds are judged only on photographs they were not tuned on.</p>
+    <p class="no-print" style="margin-top:1.2rem"><button class="btn btn-quiet" data-print>Print or save as PDF</button></p>
+  </header>
+
+  {% if not r %}<p class="callout">No evaluation data: the model bundle is not loaded.</p>{% else %}
+  {% set T = r.targets %}
+
+  <section>
+    <div class="section-head" style="margin-bottom:1.2rem">
+      <div><h2>Summary</h2></div>
+      <p>Referable DR (ICDR moderate NPDR or worse), photographs accepted by the quality gate. Brackets: 95% bootstrap confidence intervals. Target: sensitivity above {{ T.sensitivity|pct(0) }} and specificity above {{ T.specificity|pct(0) }}.</p>
+    </div>
+    <div class="scroll">
+      <table class="table">
+        <thead>
+          <tr><th rowspan="2">Test set</th><th class="r" rowspan="2">Graded</th><th class="r" rowspan="2">Referable</th><th class="r" rowspan="2">Refused by gate</th><th class="r" rowspan="2">AUC</th><th class="r" colspan="2">Global threshold {{ r.model.global_threshold|num(3) }}</th><th class="r" colspan="2">Site threshold</th><th rowspan="2">Target</th></tr>
+          <tr><th class="r">Sensitivity</th><th class="r">Specificity</th><th class="r">Sensitivity</th><th class="r">Specificity</th></tr>
+        </thead>
+        <tbody>
+        {% for key, e in r.sets.items() %}
+          <tr{% if key in ("eyepacs", "aptos") %} class="sub"{% endif %}>
+            <td>{{ e.title }}</td>
+            <td class="r">{{ "{:,}".format(e.graded) }}</td><td class="r">{{ "{:,}".format(e.referable) }}</td><td class="r">{{ e.rejected_by_gate|pct }}</td>
+            <td class="r">{{ e.auc|num(3) }}<span class="ci">{{ e.auc_ci[0]|num(3) if e.auc_ci }}–{{ e.auc_ci[1]|num(3) if e.auc_ci }}</span></td>
+            <td class="r">{{ e.global.sensitivity|pct }}<span class="ci">{{ e.global.sensitivity_ci|ci }}</span></td>
+            <td class="r">{{ e.global.specificity|pct }}<span class="ci">{{ e.global.specificity_ci|ci }}</span></td>
+            <td class="r">{{ e.site.sensitivity|pct if e.site else "–" }}</td>
+            <td class="r">{{ e.site.specificity|pct if e.site else "–" }}</td>
+            <td>{% set ok = e.site.meets_target if e.site else e.meets_target_global %}<span class="{{ 'pass' if ok else 'fail' }}">{{ "met" if ok else "not met" }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="note">The internal test set pools EyePACS and APTOS test photographs (indented rows); it has no site threshold because it is two sites. APTOS and EyePACS site thresholds were tuned on their validation photographs and measured on their test photographs. IDRiD and Messidor-2 have no validation split, so their site figures are cross-fitted: tuned on half the photographs, measured on the other half, averaged over 20 random halvings.</p>
+  </section>
+
+  <section class="section">
+    <div class="section-head" style="margin-bottom:1.2rem">
+      <div><h2>Each test set</h2></div>
+      <p>The ROC curve shows every possible threshold; the dots are the two in use. Below, who gets referred, by the reference grade: for referable grades that is sensitivity, for the others it is the false-referral rate.</p>
+    </div>
+    <div class="tabs no-print" role="tablist" aria-label="Test set">
+      {% for key, e in r.sets.items() %}<button role="tab" id="tab-{{ key }}" aria-controls="set-{{ key }}" aria-selected="{{ 'true' if loop.first else 'false' }}">{{ e.title }}</button>{% endfor %}
+    </div>
+    {% for key, e in r.sets.items() %}
+    <div class="set-panel" id="set-{{ key }}" role="tabpanel" aria-labelledby="tab-{{ key }}"{% if not loop.first %} hidden{% endif %}>
+      <h3 class="print-only">{{ e.title }}</h3>
+      <div class="set-grid">
+        <div>{% if e.roc %}{{ roc(e, T) }}{% endif %}</div>
+        <div>
+          {% if e.by_grade %}
+          <table class="table bars">
+            <caption>Referred, by reference grade{% if e.site %} · bar: global threshold; dark line: site threshold{% endif %}</caption>
+            <thead><tr><th>Reference grade</th><th class="r">Photographs</th><th class="r">Global</th>{% if e.site %}<th class="r">Site</th>{% endif %}<th></th></tr></thead>
+            <tbody>
+            {% for g in e.by_grade %}
+              <tr>
+                <td>{{ g.name }}{% if g.referable %} <span class="kicker" style="display:inline;color:var(--peach-deep)">referable</span>{% endif %}</td>
+                <td class="r">{{ "{:,}".format(g.n) }}</td>
+                <td class="r">{{ g.referred_global|pct(0) if g.n else "–" }}</td>
+                {% if e.site %}<td class="r">{{ g.referred_site|pct(0) if g.n else "–" }}</td>{% endif %}
+                <td class="bar">{% if g.n %}<div class="bar-track"><span class="bar-fill{{ ' refgrade' if g.referable }}" style="width:{{ (g.referred_global or 0) * 100 }}%"></span>{% if e.site %}<span class="bar-fill site" style="width:{{ (g.referred_site or 0) * 100 }}%"></span>{% endif %}</div>{% endif %}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+          {% if e.confusion %}
+          <div class="scroll" style="margin-top:1.6rem">
+          <table class="table confusion">
+            <caption>Estimated grade against reference grade (rows: reference){% if e.kappa is not none %} · quadratic-weighted kappa {{ e.kappa|num(2) }}{% endif %}</caption>
+            <thead><tr><th></th>{% for n in grade_names %}<th class="r">{{ n.replace(" NPDR", "").replace("Proliferative DR", "PDR") }}</th>{% endfor %}</tr></thead>
+            <tbody>
+            {% for row in e.confusion %}{% set total = row|sum %}
+              <tr><td>{{ grade_names[loop.index0] }}</td>
+              {% for v in row %}{% set share = (v / total) if total else 0 %}
+                <td class="r" style="background:rgba(43,92,153,{{ '%.2f'|format(share * 0.7) }});{% if share > 0.55 %}color:#fff;{% endif %}">{{ v }}</td>
+              {% endfor %}</tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section class="section">
+    <div class="cols-2">
+      <div>
+        <h2>The ensemble and its members</h2>
+        <p class="lede" style="font-size:1rem">Each network alone, and their average. The average is at least as good as the best member on every set.</p>
+        {% if r.member_auc %}{% set first = r.member_auc.values()|first %}
+        <div class="scroll"><table class="table" style="margin-top:1rem">
+          <thead><tr><th>AUC on</th>{% for a in first.keys() %}<th class="r">{{ {"efficientnet_b3": "EffNet-B3", "efficientnet_v2_s": "EffNetV2-S", "convnext_tiny": "ConvNeXt-T", "ensemble": "Ensemble"}.get(a, a) }}</th>{% endfor %}</tr></thead>
+          <tbody>{% for name, row in r.member_auc.items() %}<tr><td>{{ name.replace(" - external, India", "").replace(" - external", "") }}</td>{% for a, v in row.items() %}<td class="r">{% if a == "ensemble" %}<strong>{{ v|num(3) }}</strong>{% else %}{{ v|num(3) }}{% endif %}</td>{% endfor %}</tr>{% endfor %}</tbody>
+        </table></div>
+        {% endif %}
+      </div>
+      <div>
+        <h2>The quality gate</h2>
+        {% set qg = r.quality_gate %}
+        <p class="lede" style="font-size:1rem">Refuses a photograph at P(ungradable) ≥ {{ r.model.quality_threshold|num(3) }}. Judged against human quality labels, and against photographs with synthetic defects added.</p>
+        {% if qg.test %}
+        <div class="scroll"><table class="table" style="margin-top:1rem">
+          <thead><tr><th>Labels</th><th class="r">AUC</th><th class="r">Ungradable refused</th><th class="r">Gradable accepted</th></tr></thead>
+          <tbody>{% for name, t in qg.test.items() %}<tr><td>{{ "Human only" if "real EyeQ" in name else "Human + synthetic" }}<span class="ci">{{ t.ungradable|int }} ungradable of {{ "{:,}".format(t.images|int) }}</span></td><td class="r">{{ t.AUC|num(3) }}</td><td class="r">{{ t["ungradable caught"]|pct }}</td><td class="r">{{ t["gradable accepted"]|pct }}</td></tr>{% endfor %}</tbody>
+        </table></div>
+        {% endif %}
+        {% if qg.reject_rate_by_grade %}
+        <p class="note" style="margin-top:1rem">Refused, by reference DR grade: {% for g, v in qg.reject_rate_by_grade.items() %}{{ g }} {{ v|pct(0) }}{{ "; " if not loop.last else "." }}{% endfor %} A refused patient is re-photographed or referred, so refusals cost time, not missed disease.</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  {% if r.gradcam.trained %}{% set cam = r.gradcam %}
+  <section class="section">
+    <div class="section-head" style="margin-bottom:1.2rem">
+      <div><h2>Do the heatmaps point at lesions?</h2></div>
+      <p>{{ cam.images }} IDRiD photographs with lesions outlined by ophthalmologists, never used in training. The comparison is the same networks before training on retinopathy: if the trained heatmaps were no better, they would be showing generic image structure, not evidence.</p>
+    </div>
+    <div class="cols-2">
+      <div>
+        <table class="table">
+          <thead><tr><th>Measure</th><th class="r">Fundalux</th><th class="r">Untrained</th></tr></thead>
+          <tbody>
+            <tr><td>Hottest point on a lesion</td><td class="r">{{ cam.trained["pointing hit rate"]|pct(0) }}</td><td class="r">{{ cam.baseline["pointing hit rate"]|pct(0) }}</td></tr>
+            <tr><td>Heat on lesions ÷ lesion area (median; chance 1)</td><td class="r">{{ cam.trained["energy on lesions / lesion area (median)"]|num(2) }}</td><td class="r">{{ cam.baseline["energy on lesions / lesion area (median)"]|num(2) }}</td></tr>
+            <tr><td>Pixel AUC, mean (chance 0.5)</td><td class="r">{{ cam.trained["pixel AUC (mean)"]|num(2) }}<span class="ci">{{ cam.pixel_auc_ci[0]|num(2) }}–{{ cam.pixel_auc_ci[1]|num(2) }}</span></td><td class="r">{{ cam.baseline["pixel AUC (mean)"]|num(2) }}</td></tr>
+            <tr><td>Photographs where Fundalux did better</td><td class="r" colspan="2">{{ cam.beats_baseline_on }} of {{ cam.compared }}</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Sanity check {{ "passed" if cam.sanity_check_passed else "FAILED" }}: the lower confidence bound of the pixel AUC is above chance and Fundalux beats the untrained networks on most photographs.</p>
+      </div>
+      {% if "gradcam_vs_lesion_masks.png" in figures %}<figure style="margin:0"><img src="/figures/gradcam_vs_lesion_masks.png" alt="Heatmaps beside lesion masks" style="border-radius:6px;border:1px solid var(--line)"><figcaption class="note">Best, typical and worst agreement.</figcaption></figure>{% endif %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if r.robustness %}
+  <section class="section">
+    <div class="section-head" style="margin-bottom:1.2rem">
+      <div><h2>Robustness to bad photographs</h2></div>
+      <p>Good test photographs degraded on purpose. Severe defects are refused; moderate ones (severity around 0.3) pass the gate while specificity falls: the system then over-refers rather than misses.</p>
+    </div>
+    {% set kinds = r.robustness|map(attribute="kind")|unique|list %}
+    <div class="small-multiples">
+      {% for kind in kinds %}<div><h4>{{ kind }}</h4>{{ small_multiple(kind, r.robustness|selectattr("kind", "equalto", kind)|sort(attribute="severity")) }}</div>{% endfor %}
+    </div>
+    <div class="legend"><span><i style="background:#1D2140;border-radius:0;height:2px;vertical-align:3px"></i>Refused by the gate</span><span><i style="background:#2B5C99;border-radius:0;height:3px;vertical-align:3px"></i>Sensitivity without the gate</span><span><i style="background:#9A4426;border-radius:0;height:3px;vertical-align:3px"></i>Specificity without the gate</span></div>
+  </section>
+  {% endif %}
+
+  {% if "dr_training.png" in figures %}
+  <section class="section">
+    <div class="section-head" style="margin-bottom:1.2rem"><div><h2>Training</h2></div><p>Training loss and validation AUC per epoch for each network.</p></div>
+    <img src="/figures/dr_training.png" alt="Training curves" style="border-radius:6px;border:1px solid var(--line);background:#fff">
+  </section>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/evidence.js" defer></script>{% endblock %}

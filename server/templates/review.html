@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Clinician review · Fundalux{% endblock %}
+{% block description %}Blinded grading of a fixed set of fundus photographs, to measure how Fundalux agrees with clinicians.{% endblock %}
+{% block content %}
+<div class="wrap">
+  <header class="page-head" id="intro">
+    <p class="kicker">Clinician review</p>
+    <h1>Grade photographs, blind</h1>
+    <p class="lede">You will see fundus photographs one at a time, without Fundalux's answer. Grade each as you would in a screening programme. Your grades are compared with the system's and with the reference grades to show where it agrees with clinicians and where it does not.</p>
+  </header>
+
+  {% if not review %}
+    <p class="callout calm">There is no review set on this server yet. Whoever runs it can create one on the <a href="/review/results">results page</a>.</p>
+  {% elif not review_enabled %}
+    <p class="callout calm">Clinician review is switched off on this server. Whoever runs it can enable it by setting <code>FUNDALUX_REVIEW_TOKEN</code> and sharing that code with reviewers.</p>
+  {% else %}
+  <section id="start" class="cols-2">
+    <div>
+      <h2 style="margin-bottom:.8rem">How it works</h2>
+      <ul style="color:#2A2F52">
+        <li><strong>{{ review["items"]|length }} photographs</strong>{% if review.name %} from “{{ review.name }}”{% endif %}. Most take 20–40 seconds; you can stop and continue later with the same name.</li>
+        <li>For each: is it gradable, the ICDR grade, whether you would refer for another reason (for example macular oedema), and how confident you are.</li>
+        <li>Each reviewer sees the photographs in their own random order.</li>
+        <li><strong>Blinded</strong> (recommended) never shows Fundalux's answer. <strong>Teaching</strong> shows it after you commit your grade; those answers are marked and reported separately.</li>
+        <li>Your name is stored with your grades. No patient information is involved.</li>
+      </ul>
+      <p class="note">Keyboard: <kbd>0</kbd>–<kbd>4</kbd> grade · <kbd>U</kbd> ungradable · <kbd>R</kbd> refer for another reason · <kbd>Z</kbd> zoom · <kbd>Enter</kbd> save and next.</p>
+    </div>
+    <form class="panel" id="start-form" novalidate>
+      <div class="field"><label for="reviewer">Your name or initials</label><input type="text" id="reviewer" maxlength="60" autocomplete="name" required></div>
+      <div class="field"><label for="code">Review code</label><input type="password" id="code" autocomplete="off" required><p class="hint">Given to you by whoever organised the review.</p></div>
+      <fieldset class="field" style="border:0;padding:0;margin:0 0 1.2rem">
+        <legend style="font-size:.88rem;font-weight:500;margin-bottom:.35rem">Mode</legend>
+        <div class="seg">
+          <input type="radio" name="mode" id="mode-blinded" value="blinded" checked><label for="mode-blinded">Blinded</label>
+          <input type="radio" name="mode" id="mode-teaching" value="teaching"><label for="mode-teaching">Teaching</label>
+        </div>
+      </fieldset>
+      <button class="btn" type="submit">Start or continue</button>
+      <p id="start-error" class="error" role="alert"></p>
+    </form>
+  </section>
+
+  <section id="grader" class="grader" hidden>
+    <div class="viewer">
+      <div class="viewer-bar"><span>Photograph <b id="counter">–</b></span><span><kbd style="background:transparent;color:#C9CBE4;border-color:#454A70">Z</kbd> or click to zoom</span></div>
+      <div class="progress"><span id="progress" style="width:0"></span></div>
+      <div class="viewer-stage" id="stage"><img id="photo" alt="Fundus photograph to grade"></div>
+    </div>
+    <form class="panel" id="grade-form" novalidate>
+      <fieldset class="field" style="border:0;padding:0;margin:0 0 1rem">
+        <legend style="font-size:.88rem;font-weight:500;margin-bottom:.35rem">Image quality</legend>
+        <div class="seg">
+          <input type="radio" name="gradable" id="g-yes" value="1" checked><label for="g-yes">Gradable</label>
+          <input type="radio" name="gradable" id="g-no" value="0"><label for="g-no">Ungradable</label>
+        </div>
+      </fieldset>
+      <fieldset class="field" style="border:0;padding:0;margin:0 0 1rem">
+        <legend style="font-size:.88rem;font-weight:500;margin-bottom:.35rem">ICDR grade</legend>
+        <div class="grades-choice" id="grades">
+          {% set descs = ["No abnormalities", "Microaneurysms only", "More than microaneurysms, less than severe", "4-2-1 rule: haemorrhages, venous beading or IRMA", "Neovascularisation or vitreous/preretinal haemorrhage"] %}
+          {% for g in range(5) %}
+          <input type="radio" name="grade" id="grade-{{ g }}" value="{{ g }}"><label for="grade-{{ g }}"><b>{{ g }}</b><strong>{{ grade_names[g] }}</strong><small>{{ descs[g] }}</small>{% if g >= 2 %}<span class="ref-mark">refer</span>{% endif %}</label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <label class="check" style="margin-bottom:1rem"><input type="checkbox" id="other"> Refer for another reason (e.g. macular oedema, other disease)</label>
+      <fieldset class="field" style="border:0;padding:0;margin:0 0 1rem">
+        <legend style="font-size:.88rem;font-weight:500;margin-bottom:.35rem">Confidence</legend>
+        <div class="seg">
+          <input type="radio" name="confidence" id="c-low" value="low"><label for="c-low">Low</label>
+          <input type="radio" name="confidence" id="c-medium" value="medium" checked><label for="c-medium">Medium</label>
+          <input type="radio" name="confidence" id="c-high" value="high"><label for="c-high">High</label>
+        </div>
+      </fieldset>
+      <div class="field"><label for="note">Note <span class="hint" style="display:inline;font-weight:400">optional: what you saw, or what the system should know</span></label><textarea id="note" maxlength="2000"></textarea></div>
+      <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+        <button class="btn" type="submit" id="save">Save and next</button>
+        <button class="btn btn-quiet" type="button" id="skip">Skip</button>
+        <span class="keys" id="status" aria-live="polite"></span>
+      </div>
+      <div id="reveal" aria-live="polite" style="margin-top:1.2rem"></div>
+    </form>
+  </section>
+
+  <section id="done" hidden>
+    <div class="callout calm"><h2 style="margin-bottom:.4rem">Thank you</h2><p style="margin:0" id="done-text"></p></div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/review.js" defer></script>{% endblock %}

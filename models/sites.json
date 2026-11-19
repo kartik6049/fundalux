@@ -1,0 +1,89 @@
+{
+  "model_fingerprint": "f7e56f2cd2e94fdb",
+  "sites": [
+    {
+      "name": "EyePACS (USA, many clinics)",
+      "threshold": 0.140104938416511,
+      "target_sensitivity": 0.93,
+      "n_images": 2862,
+      "n_referable": 514,
+      "expected_sensitivity": 0.9326530612244898,
+      "expected_specificity": 0.7623430962343096,
+      "sensitivity_range": [
+        null,
+        null
+      ],
+      "specificity_range": [
+        null,
+        null
+      ],
+      "estimate": "tuned on 2862 validation images, measured on 2880 separate test images",
+      "source": "built-in",
+      "rejected_by_gate": 0,
+      "created": "2026-11-19"
+    },
+    {
+      "name": "APTOS 2019 (Aravind, India)",
+      "threshold": 0.7413033051398416,
+      "target_sensitivity": 0.93,
+      "n_images": 365,
+      "n_referable": 149,
+      "expected_sensitivity": 0.918918918918919,
+      "expected_specificity": 0.9308755760368663,
+      "sensitivity_range": [
+        null,
+        null
+      ],
+      "specificity_range": [
+        null,
+        null
+      ],
+      "estimate": "tuned on 365 validation images, measured on 365 separate test images",
+      "source": "built-in",
+      "rejected_by_gate": 0,
+      "created": "2026-11-19"
+    },
+    {
+      "name": "IDRiD (Nanded, India)",
+      "threshold": 0.4075176565084835,
+      "target_sensitivity": 0.93,
+      "n_images": 509,
+      "n_referable": 316,
+      "expected_sensitivity": 0.9224683544303798,
+      "expected_specificity": 0.9227979274611398,
+      "sensitivity_range": [
+        0.9018987341772152,
+        0.9367088607594937
+      ],
+      "specificity_range": [
+        0.9119170984455959,
+        0.9378238341968912
+      ],
+      "estimate": "cross-fitted: tuned on one half of the site's images, tested on the other (20 random splits)",
+      "source": "built-in",
+      "rejected_by_gate": 0,
+      "created": "2026-11-19"
+    },
+    {
+      "name": "Messidor-2 (France)",
+      "threshold": 0.4024450459494933,
+      "target_sensitivity": 0.93,
+      "n_images": 1741,
+      "n_referable": 456,
+      "expected_sensitivity": 0.9281798245614036,
+      "expected_specificity": 0.8668093385214009,
+      "sensitivity_range": [
+        0.9166666666666666,
+        0.9407894736842105
+      ],
+      "specificity_range": [
+        0.8529182879377432,
+        0.8762645914396887
+      ],
+      "estimate": "cross-fitted: tuned on one half of the site's images, tested on the other (20 random splits)",
+      "source": "built-in",
+      "rejected_by_gate": 0,
+      "created": "2026-11-19"
+    }
+  ]
+}

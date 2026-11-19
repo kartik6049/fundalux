@@ -1,0 +1,756 @@
+{
+  "run": "efficientnet_b3@512+efficientnet_v2_s@448+convnext_tiny@448_balanced",
+  "smoke_test": false,
+  "image_size": 512,
+  "data": {
+    "images": {
+      "aptos/test": 366,
+      "aptos/train": 2930,
+      "aptos/val": 366,
+      "eyepacs/test": 3512,
+      "eyepacs/train": 28102,
+      "eyepacs/val": 3512,
+      "idrid/external": 516,
+      "messidor/external": 1744
+    },
+    "eyeq_labelled": 12543,
+    "idrid_lesion_mask_images": 81
+  },
+  "quality_gate": {
+    "real_labels": 12543,
+    "real_ungradable": 2320,
+    "threshold": 0.40656742291307774,
+    "test": {
+      "test: real + synthetic": {
+        "images": 1637,
+        "ungradable": 550,
+        "AUC": 0.9979794262774944,
+        "ungradable caught": 0.9527272727272728,
+        "gradable accepted": 0.985280588776449
+      },
+      "test: real EyeQ labels only": {
+        "images": 1271,
+        "ungradable": 257,
+        "AUC": 0.9928702445912863,
+        "ungradable caught": 0.8988326848249028,
+        "gradable accepted": 0.9733727810650887
+      }
+    },
+    "reject_rate_by_source": {
+      "aptos": 0.002732240437158473,
+      "eyepacs": 0.17995444191343968,
+      "idrid": 0.013565891472868241,
+      "messidor": 0.0017201834862384802
+    },
+    "reject_rate_by_grade": {
+      "No DR": 0.10461305772624152,
+      "Mild NPDR": 0.046511627906976716,
+      "Moderate NPDR": 0.11609498680738783,
+      "Severe NPDR": 0.09677419354838712,
+      "Proliferative DR": 0.21938775510204078
+    }
+  },
+  "dr_training": {
+    "epochs": 8,
+    "train_images": 29209,
+    "balanced_sources": true,
+    "requested_models": [
+      "efficientnet_b3",
+      "efficientnet_v2_s",
+      "convnext_tiny"
+    ],
+    "members": [
+      {
+        "arch": "efficientnet_b3",
+        "size": 512,
+        "batch": 12,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 1.2337027049838467,
+            "val_score": 0.9207571711653919,
+            "minutes": 12.595854512850444
+          },
+          {
+            "epoch": 2,
+            "train_loss": 1.0496998735770107,
+            "val_score": 0.9290550020563539,
+            "minutes": 12.51579670906067
+          },
+          {
+            "epoch": 3,
+            "train_loss": 0.9646733510587288,
+            "val_score": 0.9310737709595598,
+            "minutes": 12.52152098417282
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.909640076567917,
+            "val_score": 0.9369732437851868,
+            "minutes": 12.521348202228546
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.848202940385755,
+            "val_score": 0.9359753709800249,
+            "minutes": 12.52116827170054
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.8024612961607873,
+            "val_score": 0.9415751474376256,
+            "minutes": 12.514539388815562
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.7911079725588848,
+            "val_score": 0.9420098350784465,
+            "minutes": 13.842799472808839
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.7620485842032029,
+            "val_score": 0.9431360086268474,
+            "minutes": 12.508873867988587
+          }
+        ]
+      },
+      {
+        "arch": "efficientnet_v2_s",
+        "size": 448,
+        "batch": 12,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 1.239507490969527,
+            "val_score": 0.9222538819829943,
+            "minutes": 10.865699450174967
+          },
+          {
+            "epoch": 2,
+            "train_loss": 1.0908410452557276,
+            "val_score": 0.9223109482644962,
+            "minutes": 10.8269589026769
+          },
+          {
+            "epoch": 3,
+            "train_loss": 1.0313744619427496,
+            "val_score": 0.9336403761651852,
+            "minutes": 10.841226780414582
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.96598732509423,
+            "val_score": 0.9356929912767301,
+            "minutes": 12.159887234369913
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.9029774045420164,
+            "val_score": 0.9393289005295357,
+            "minutes": 10.824584849675496
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.8583726175098804,
+            "val_score": 0.9465294845734098,
+            "minutes": 10.823953652381897
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.8041287462916547,
+            "val_score": 0.9431129853339657,
+            "minutes": 10.828970770041147
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.7831321674274341,
+            "val_score": 0.9456660127001993,
+            "minutes": 10.832521144549052
+          }
+        ]
+      },
+      {
+        "arch": "convnext_tiny",
+        "size": 448,
+        "batch": 12,
+        "history": [
+          {
+            "epoch": 1,
+            "train_loss": 1.2234422564873857,
+            "val_score": 0.9171466465688406,
+            "minutes": 11.055893468856812
+          },
+          {
+            "epoch": 2,
+            "train_loss": 1.0653464261537315,
+            "val_score": 0.917791889110376,
+            "minutes": 9.967224637667337
+          },
+          {
+            "epoch": 3,
+            "train_loss": 1.0073496991724094,
+            "val_score": 0.9313469019896454,
+            "minutes": 9.970138359069825
+          },
+          {
+            "epoch": 4,
+            "train_loss": 0.9535937151070394,
+            "val_score": 0.9376312770449899,
+            "minutes": 9.969058088461558
+          },
+          {
+            "epoch": 5,
+            "train_loss": 0.9021255491376413,
+            "val_score": 0.941757169197589,
+            "minutes": 9.975044357776643
+          },
+          {
+            "epoch": 6,
+            "train_loss": 0.8392719658261553,
+            "val_score": 0.9449133281252152,
+            "minutes": 9.976503932476044
+          },
+          {
+            "epoch": 7,
+            "train_loss": 0.803211491588647,
+            "val_score": 0.9470910954955025,
+            "minutes": 9.97170158624649
+          },
+          {
+            "epoch": 8,
+            "train_loss": 0.7762916288357733,
+            "val_score": 0.9481051042837101,
+            "minutes": 9.990292139848073
+          }
+        ]
+      }
+    ]
+  },
+  "dr": {
+    "threshold": 0.17907479629102144,
+    "validation": {
+      "sensitivity": 0.9306184012066365,
+      "specificity": 0.8182527301092044,
+      "target_sensitivity": 0.93
+    },
+    "results": {
+      "Internal test (EyePACS + APTOS)": {
+        "n": 3245,
+        "n_positive": 638,
+        "threshold": 0.17907479629102144,
+        "auc": 0.9572623981972819,
+        "sensitivity": 0.9341692789968652,
+        "specificity": 0.8062907556578442,
+        "auc_ci": [
+          0.9479371656232556,
+          0.9661270633444907
+        ],
+        "sensitivity_ci": [
+          0.915168609089388,
+          0.9528343934436256
+        ],
+        "specificity_ci": [
+          0.7909905936789244,
+          0.8224160160662334
+        ],
+        "rejected_by_gate": 0.16322846828261994,
+        "grade_kappa": 0.8070305034499872,
+        "all_images": {
+          "n": 3878,
+          "n_positive": 832,
+          "threshold": 0.17907479629102144,
+          "auc": 0.9561475642709228,
+          "sensitivity": 0.9423076923076923,
+          "specificity": 0.7698621142481944
+        }
+      },
+      "EyePACS test": {
+        "n": 2880,
+        "n_positive": 490,
+        "threshold": 0.17907479629102144,
+        "auc": 0.9481291093843395,
+        "sensitivity": 0.9163265306122449,
+        "specificity": 0.8037656903765691,
+        "auc_ci": [
+          0.9358392208586249,
+          0.9596421404516673
+        ],
+        "sensitivity_ci": [
+          0.8914327143241969,
+          0.9390774413213562
+        ],
+        "specificity_ci": [
+          0.7880782315733844,
+          0.8197976722363934
+        ],
+        "rejected_by_gate": 0.17995444191343968,
+        "grade_kappa": 0.7728275175813435,
+        "all_images": {
+          "n": 3512,
+          "n_positive": 683,
+          "threshold": 0.17907479629102144,
+          "auc": 0.949299945606242,
+          "sensitivity": 0.931185944363104,
+          "specificity": 0.7649346058677978
+        }
+      },
+      "APTOS test": {
+        "n": 365,
+        "n_positive": 148,
+        "threshold": 0.17907479629102144,
+        "auc": 0.9784531074853655,
+        "sensitivity": 0.9932432432432432,
+        "specificity": 0.8341013824884793,
+        "auc_ci": [
+          0.9653439901633059,
+          0.9890172566584
+        ],
+        "sensitivity_ci": [
+          0.9784093892768997,
+          1.0
+        ],
+        "specificity_ci": [
+          0.7850455607476635,
+          0.8853309305373526
+        ],
+        "rejected_by_gate": 0.002732240437158473,
+        "grade_kappa": 0.897049606017192,
+        "all_images": {
+          "n": 366,
+          "n_positive": 149,
+          "threshold": 0.17907479629102144,
+          "auc": 0.9785977175022422,
+          "sensitivity": 0.9932885906040269,
+          "specificity": 0.8341013824884793
+        }
+      },
+      "IDRiD - external, India": {
+        "n": 509,
+        "n_positive": 316,
+        "threshold": 0.17907479629102144,
+        "auc": 0.9783072079753395,
+        "sensitivity": 0.9746835443037974,
+        "specificity": 0.7616580310880829,
+        "auc_ci": [
+          0.9676538536037905,
+          0.9868428104022113
+        ],
+        "sensitivity_ci": [
+          0.9559297973587125,
+          0.9905377609445922
+        ],
+        "specificity_ci": [
+          0.6994417029106724,
+          0.8182435770750988
+        ],
+        "rejected_by_gate": 0.013565891472868241,
+        "grade_kappa": 0.7946217053080978,
+        "all_images": {
+          "n": 516,
+          "n_positive": 323,
+          "threshold": 0.17907479629102144,
+          "auc": 0.9786971237908854,
+          "sensitivity": 0.9752321981424149,
+          "specificity": 0.7616580310880829
+        }
+      },
+      "Messidor-2 - external": {
+        "n": 1741,
+        "n_positive": 456,
+        "threshold": 0.17907479629102144,
+        "auc": 0.966586456413407,
+        "sensitivity": 0.9649122807017544,
+        "specificity": 0.7556420233463035,
+        "auc_ci": [
+          0.9583976839581274,
+          0.9745732300902369
+        ],
+        "sensitivity_ci": [
+          0.9468967551622419,
+          0.9810973505826447
+        ],
+        "specificity_ci": [
+          0.7326472322406254,
+          0.7799639934282249
+        ],
+        "rejected_by_gate": 0.0017201834862384802,
+        "grade_kappa": 0.81516867203495,
+        "all_images": {
+          "n": 1744,
+          "n_positive": 457,
+          "threshold": 0.17907479629102144,
+          "auc": 0.9664971546809622,
+          "sensitivity": 0.9649890590809628,
+          "specificity": 0.7552447552447552
+        }
+      }
+    },
+    "member_auc": {
+      "Internal test (EyePACS + APTOS)": {
+        "efficientnet_b3": 0.9450797407029302,
+        "efficientnet_v2_s": 0.9475363531750184,
+        "convnext_tiny": 0.9508743640524125,
+        "ensemble": 0.9572623981972819
+      },
+      "EyePACS test": {
+        "efficientnet_b3": 0.932666723593203,
+        "efficientnet_v2_s": 0.9367291435402612,
+        "convnext_tiny": 0.9395102894714372,
+        "ensemble": 0.9481291093843395
+      },
+      "APTOS test": {
+        "efficientnet_b3": 0.9746855150080956,
+        "efficientnet_v2_s": 0.9739070868103127,
+        "convnext_tiny": 0.9751992776186325,
+        "ensemble": 0.9784531074853655
+      },
+      "IDRiD - external, India": {
+        "efficientnet_b3": 0.9695841804945237,
+        "efficientnet_v2_s": 0.9752574276906932,
+        "convnext_tiny": 0.9755935593887322,
+        "ensemble": 0.9783072079753395
+      },
+      "Messidor-2 - external": {
+        "efficientnet_b3": 0.9568050720185679,
+        "efficientnet_v2_s": 0.9574254215304799,
+        "convnext_tiny": 0.9615511297699502,
+        "ensemble": 0.966586456413407
+      }
+    },
+    "threshold_transfer_diagnostic": {
+      "Internal test (EyePACS + APTOS)": {
+        "threshold for 90% sensitivity on this set": 0.2897566700810256,
+        "specificity there": 0.8703490602224779
+      },
+      "EyePACS test": {
+        "threshold for 90% sensitivity on this set": 0.20653837424402297,
+        "specificity there": 0.8284518828451883
+      },
+      "APTOS test": {
+        "threshold for 90% sensitivity on this set": 0.841281650619829,
+        "specificity there": 0.9400921658986175
+      },
+      "IDRiD - external, India": {
+        "threshold for 90% sensitivity on this set": 0.5483605144136776,
+        "specificity there": 0.9430051813471503
+      },
+      "Messidor-2 - external": {
+        "threshold for 90% sensitivity on this set": 0.5623458302231629,
+        "specificity there": 0.9214007782101167
+      }
+    }
+  },
+  "success_criteria": {
+    "target_sensitivity": 0.9,
+    "target_specificity": 0.85,
+    "met": {
+      "Internal test (EyePACS + APTOS)": false,
+      "IDRiD - external, India": false,
+      "Messidor-2 - external": false
+    }
+  },
+  "gradcam": {
+    "images": 81,
+    "flagged_referable": 81,
+    "empty_heatmaps": 0,
+    "trained": {
+      "pointing hit rate": 0.9753086419753086,
+      "energy on lesions / lesion area (median)": 2.3818283650948278,
+      "pixel AUC (mean)": 0.7851450921621814
+    },
+    "baseline": {
+      "pointing hit rate": 0.20987654320987653,
+      "energy on lesions / lesion area (median)": 0.928042574812827,
+      "pixel AUC (mean)": 0.5076876408722008
+    },
+    "pixel_auc_ci": [
+      0.7679635419062736,
+      0.8028196627510267
+    ],
+    "beats_baseline_on": 80,
+    "compared": 81,
+    "sanity_check_passed": true
+  },
+  "robustness": {
+    "images": 600,
+    "rows": [
+      {
+        "kind": "blur",
+        "severity": 0.0,
+        "rejected": 0.0,
+        "sens_no_gate": 0.9478260869565217,
+        "spec_no_gate": 0.8103092783505155,
+        "sens_with_gate": 0.9478260869565217,
+        "spec_with_gate": 0.8103092783505155
+      },
+      {
+        "kind": "blur",
+        "severity": 0.15,
+        "rejected": 0.0016666666666667052,
+        "sens_no_gate": 0.9391304347826087,
+        "spec_no_gate": 0.7835051546391752,
+        "sens_with_gate": 0.9391304347826087,
+        "spec_with_gate": 0.7830578512396694
+      },
+      {
+        "kind": "blur",
+        "severity": 0.3,
+        "rejected": 0.0016666666666667052,
+        "sens_no_gate": 0.8956521739130435,
+        "spec_no_gate": 0.6515463917525773,
+        "sens_with_gate": 0.8956521739130435,
+        "spec_with_gate": 0.6508264462809917
+      },
+      {
+        "kind": "blur",
+        "severity": 0.5,
+        "rejected": 0.995,
+        "sens_no_gate": 0.6782608695652174,
+        "spec_no_gate": 0.7381443298969073,
+        "sens_with_gate": 1.0,
+        "spec_with_gate": 1.0
+      },
+      {
+        "kind": "blur",
+        "severity": 0.7,
+        "rejected": 1.0,
+        "sens_no_gate": 0.591304347826087,
+        "spec_no_gate": 0.5402061855670103,
+        "sens_with_gate": null,
+        "spec_with_gate": null
+      },
+      {
+        "kind": "blur",
+        "severity": 1.0,
+        "rejected": 1.0,
+        "sens_no_gate": 0.23478260869565218,
+        "spec_no_gate": 0.7381443298969073,
+        "sens_with_gate": null,
+        "spec_with_gate": null
+      },
+      {
+        "kind": "dark",
+        "severity": 0.0,
+        "rejected": 0.0,
+        "sens_no_gate": 0.9478260869565217,
+        "spec_no_gate": 0.8103092783505155,
+        "sens_with_gate": 0.9478260869565217,
+        "spec_with_gate": 0.8103092783505155
+      },
+      {
+        "kind": "dark",
+        "severity": 0.15,
+        "rejected": 0.0050000000000000044,
+        "sens_no_gate": 0.9565217391304348,
+        "spec_no_gate": 0.6783505154639176,
+        "sens_with_gate": 0.9565217391304348,
+        "spec_with_gate": 0.6763485477178424
+      },
+      {
+        "kind": "dark",
+        "severity": 0.3,
+        "rejected": 0.0,
+        "sens_no_gate": 0.9478260869565217,
+        "spec_no_gate": 0.5278350515463918,
+        "sens_with_gate": 0.9478260869565217,
+        "spec_with_gate": 0.5278350515463918
+      },
+      {
+        "kind": "dark",
+        "severity": 0.5,
+        "rejected": 0.44666666666666666,
+        "sens_no_gate": 1.0,
+        "spec_no_gate": 0.09278350515463918,
+        "sens_with_gate": 1.0,
+        "spec_with_gate": 0.14181818181818182
+      },
+      {
+        "kind": "dark",
+        "severity": 0.7,
+        "rejected": 1.0,
+        "sens_no_gate": 1.0,
+        "spec_no_gate": 0.0,
+        "sens_with_gate": null,
+        "spec_with_gate": null
+      },
+      {
+        "kind": "dark",
+        "severity": 1.0,
+        "rejected": 1.0,
+        "sens_no_gate": 1.0,
+        "spec_no_gate": 0.0,
+        "sens_with_gate": null,
+        "spec_with_gate": null
+      },
+      {
+        "kind": "glare",
+        "severity": 0.0,
+        "rejected": 0.0,
+        "sens_no_gate": 0.9478260869565217,
+        "spec_no_gate": 0.8103092783505155,
+        "sens_with_gate": 0.9478260869565217,
+        "spec_with_gate": 0.8103092783505155
+      },
+      {
+        "kind": "glare",
+        "severity": 0.15,
+        "rejected": 0.0,
+        "sens_no_gate": 0.9478260869565217,
+        "spec_no_gate": 0.797938144329897,
+        "sens_with_gate": 0.9478260869565217,
+        "spec_with_gate": 0.797938144329897
+      },
+      {
+        "kind": "glare",
+        "severity": 0.3,
+        "rejected": 0.018333333333333313,
+        "sens_no_gate": 0.9130434782608695,
+        "spec_no_gate": 0.7917525773195876,
+        "sens_with_gate": 0.9130434782608695,
+        "spec_with_gate": 0.7911392405063291
+      },
+      {
+        "kind": "glare",
+        "severity": 0.5,
+        "rejected": 0.365,
+        "sens_no_gate": 0.8869565217391304,
+        "spec_no_gate": 0.7793814432989691,
+        "sens_with_gate": 0.8780487804878049,
+        "spec_with_gate": 0.8528428093645485
+      },
+      {
+        "kind": "glare",
+        "severity": 0.7,
+        "rejected": 1.0,
+        "sens_no_gate": 0.8695652173913043,
+        "spec_no_gate": 0.7216494845360825,
+        "sens_with_gate": null,
+        "spec_with_gate": null
+      },
+      {
+        "kind": "glare",
+        "severity": 1.0,
+        "rejected": 1.0,
+        "sens_no_gate": 0.8869565217391304,
+        "spec_no_gate": 0.311340206185567,
+        "sens_with_gate": null,
+        "spec_with_gate": null
+      },
+      {
+        "kind": "haze",
+        "severity": 0.0,
+        "rejected": 0.0,
+        "sens_no_gate": 0.9478260869565217,
+        "spec_no_gate": 0.8103092783505155,
+        "sens_with_gate": 0.9478260869565217,
+        "spec_with_gate": 0.8103092783505155
+      },
+      {
+        "kind": "haze",
+        "severity": 0.15,
+        "rejected": 0.0016666666666667052,
+        "sens_no_gate": 0.9304347826086956,
+        "spec_no_gate": 0.797938144329897,
+        "sens_with_gate": 0.9304347826086956,
+        "spec_with_gate": 0.7975206611570248
+      },
+      {
+        "kind": "haze",
+        "severity": 0.3,
+        "rejected": 0.0,
+        "sens_no_gate": 0.9130434782608695,
+        "spec_no_gate": 0.709278350515464,
+        "sens_with_gate": 0.9130434782608695,
+        "spec_with_gate": 0.709278350515464
+      },
+      {
+        "kind": "haze",
+        "severity": 0.5,
+        "rejected": 0.20833333333333337,
+        "sens_no_gate": 0.8782608695652174,
+        "spec_no_gate": 0.6577319587628866,
+        "sens_with_gate": 0.8924731182795699,
+        "spec_with_gate": 0.6910994764397905
+      },
+      {
+        "kind": "haze",
+        "severity": 0.7,
+        "rejected": 1.0,
+        "sens_no_gate": 0.9217391304347826,
+        "spec_no_gate": 0.3154639175257732,
+        "sens_with_gate": null,
+        "spec_with_gate": null
+      },
+      {
+        "kind": "haze",
+        "severity": 1.0,
+        "rejected": 1.0,
+        "sens_no_gate": 0.11304347826086956,
+        "spec_no_gate": 0.8391752577319588,
+        "sens_with_gate": null,
+        "spec_with_gate": null
+      },
+      {
+        "kind": "motion",
+        "severity": 0.0,
+        "rejected": 0.0,
+        "sens_no_gate": 0.9478260869565217,
+        "spec_no_gate": 0.8103092783505155,
+        "sens_with_gate": 0.9478260869565217,
+        "spec_with_gate": 0.8103092783505155
+      },
+      {
+        "kind": "motion",
+        "severity": 0.15,
+        "rejected": 0.0016666666666667052,
+        "sens_no_gate": 0.9478260869565217,
+        "spec_no_gate": 0.7896907216494845,
+        "sens_with_gate": 0.9478260869565217,
+        "spec_with_gate": 0.7892561983471075
+      },
+      {
+        "kind": "motion",
+        "severity": 0.3,
+        "rejected": 0.0050000000000000044,
+        "sens_no_gate": 0.9391304347826087,
+        "spec_no_gate": 0.6927835051546392,
+        "sens_with_gate": 0.9391304347826087,
+        "spec_with_gate": 0.6950207468879668
+      },
+      {
+        "kind": "motion",
+        "severity": 0.5,
+        "rejected": 0.9866666666666667,
+        "sens_no_gate": 0.8869565217391304,
+        "spec_no_gate": 0.4762886597938144,
+        "sens_with_gate": 1.0,
+        "spec_with_gate": 0.8571428571428571
+      },
+      {
+        "kind": "motion",
+        "severity": 0.7,
+        "rejected": 1.0,
+        "sens_no_gate": 0.8521739130434782,
+        "spec_no_gate": 0.51340206185567,
+        "sens_with_gate": null,
+        "spec_with_gate": null
+      },
+      {
+        "kind": "motion",
+        "severity": 1.0,
+        "rejected": 1.0,
+        "sens_no_gate": 0.5043478260869565,
+        "spec_no_gate": 0.7278350515463917,
+        "sens_with_gate": null,
+        "spec_with_gate": null
+      }
+    ],
+    "severe_rejected": 1.0
+  },
+  "simulation_inputs": {
+    "sensitivity": 0.9341692789968652,
+    "specificity": 0.8062907556578442,
+    "p_ungradable": 0.16322846828261994
+  }
+}

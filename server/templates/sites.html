@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Site calibration · Fundalux{% endblock %}
+{% block content %}
+<div class="wrap">
+  <header class="page-head">
+    <p class="kicker">Site calibration</p>
+    <h1>Thresholds for each camera</h1>
+    <p class="lede">The networks rank photographs well at every site, but each camera shifts their scores. A site threshold is tuned on graded photographs from that site for {{ r.targets.tuning_sensitivity|pct(0) if r else "93%" }} sensitivity; the expected figures are measured on photographs it was not tuned on. <a href="/how-it-works#thresholds">How calibration works</a>.</p>
+  </header>
+
+  <div class="scroll">
+    <table class="table" id="sites-table">
+      <thead><tr><th>Site</th><th class="r">Threshold</th><th class="r">Photographs (referable)</th><th class="r">Expected sensitivity</th><th class="r">Expected specificity</th><th>{{ r.targets.sensitivity|pct(0) if r else "90%" }} / {{ r.targets.specificity|pct(0) if r else "85%" }}</th><th>Measured on</th><th></th></tr></thead>
+      <tbody>
+      {% if r %}
+        <tr><td>Global threshold</td><td class="r">{{ r.model.global_threshold|num(3) }}</td><td class="r">pooled validation</td><td class="r" colspan="2" style="text-align:left;color:var(--muted)">varies by camera; see <a href="/evidence">evidence</a></td><td></td><td></td><td></td></tr>
+        {% for p in r.sites %}
+        {% set ok = p.expected_sensitivity > r.targets.sensitivity and p.expected_specificity > r.targets.specificity %}
+        <tr>
+          <td>{{ p.name }}{% if p.stale %} <span class="fail">(stale: different model)</span>{% endif %}{% for w in p.warnings if not p.stale %}<span class="ci">{{ w }}</span>{% endfor %}</td>
+          <td class="r">{{ p.threshold|num(3) }}</td>
+          <td class="r">{{ "{:,}".format(p.n_images) }} ({{ "{:,}".format(p.n_referable) }})</td>
+          <td class="r">{{ p.expected_sensitivity|pct }}</td>
+          <td class="r">{{ p.expected_specificity|pct }}</td>
+          <td><span class="{{ 'pass' if ok else 'fail' }}">{{ "meets" if ok else "below" }}</span></td>
+          <td style="font-size:.8rem;color:var(--muted);max-width:22rem">{{ p.estimate }}</td>
+          <td>{% if p.source != "built-in" %}<button class="btn btn-danger admin-only" data-remove="{{ p.name }}" style="padding:.35rem .7rem;font-size:.8rem" hidden>Remove</button>{% else %}<span class="ci" style="white-space:nowrap">built-in</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <section class="section">
+    <div class="cols-2">
+      <div>
+        <h2>Calibrate a new site</h2>
+        <p class="lede" style="font-size:1rem">You need photographs from the site's own camera, graded by an ophthalmologist or certified grader:</p>
+        <ul style="color:#2A2F52">
+          <li>At least 20 referable and 20 non-referable photographs that pass the quality gate; 50 or more of each gives a usable estimate.</li>
+          <li>A CSV with an <code>image</code> column (file names) and a <code>grade</code> column (0–4) or a <code>referable</code> column (0/1).</li>
+          <li>Photographs refused by the quality gate are left out, as they would be in use.</li>
+        </ul>
+        <p class="note">Scoring takes a few seconds per photograph. For large batches use the command line: <code>python -m fundalux.calibrate --site NAME --labels labels.csv --images DIR</code>.</p>
+      </div>
+      <form class="panel" id="calibrate" novalidate>
+        {% if not admin_enabled %}
+        <p class="callout calm" style="margin-top:0">Calibration is switched off on this server. Whoever runs it can enable it by setting <code>FUNDALUX_ADMIN_TOKEN</code>.</p>
+        {% endif %}
+        <div class="field"><label for="token">Admin token</label><input type="password" id="token" autocomplete="off" {% if not admin_enabled %}disabled{% endif %}></div>
+        <div class="field"><label for="name">Site name</label><input type="text" id="name" placeholder="e.g. PHC Nanded, camera 2" maxlength="80" required></div>
+        <div class="field"><label for="labels">Labels (CSV)</label><input type="file" id="labels" accept=".csv,text/csv" required></div>
+        <div class="field"><label for="photos">Photographs</label><input type="file" id="photos" accept=".jpg,.jpeg,.png,.tif,.tiff,.bmp,image/*" multiple required></div>
+        <div class="field"><label for="target">Target sensitivity <output id="target-out" style="float:right;color:var(--powder-deep)">{{ r.targets.tuning_sensitivity|num(2) if r else "0.93" }}</output></label><input type="range" id="target" min="0.85" max="0.98" step="0.01" value="{{ r.targets.tuning_sensitivity if r else 0.93 }}"></div>
+        <button class="btn" type="submit" {% if not admin_enabled %}disabled{% endif %}>Score and calibrate</button>
+        <div id="job" aria-live="polite" style="margin-top:1.2rem"></div>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/sites.js" defer></script>{% endblock %}
